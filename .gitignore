@@ -11,6 +11,5 @@ backend/oidc/token_jwt_key.pem
 front/.env.development
 front/.env.production
 front/.env.staging
-front/build
 front/.vscode
 backend/custom-go/custom-go
