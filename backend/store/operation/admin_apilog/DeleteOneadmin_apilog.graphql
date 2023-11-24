@@ -1,0 +1,5 @@
+mutation DeleteOneadmin_apilog($id: Int!) {
+  data: main_deleteOneadmin_apilog(where: {id: $id}) {
+    id
+  }
+}

@@ -1,0 +1,21 @@
+query MyQuery($take: Int = 20, $skip: Int = 0) {
+  data: dapdap_findManynetwork(
+    skip: $skip
+    take: $take
+    orderBy: {id: asc}
+  ){
+    id
+    chain_id
+    name
+    technology
+    description
+    native_token
+    milestones
+    created_at
+  }
+  total: dapdap_aggregatenetwork(where:{}) @transform(get: "_count.id") {
+    _count {
+      id
+    }
+  }
+}

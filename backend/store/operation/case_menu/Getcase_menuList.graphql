@@ -1,0 +1,27 @@
+query Getcase_menuList($take: Int = 10, $skip: Int = 0, $orderBy: [main_case_menuOrderByWithRelationInput], $query: main_case_menuWhereInput) {
+  data: main_findManycase_menu(
+    skip: $skip
+    take: $take
+  orderBy: $orderBy
+    where: {AND: $query}) {
+    
+    id
+    parentid
+    label
+    path
+    icon
+    sort
+    level
+    name
+    is_bottom
+    create_time
+    perms
+    menu_type
+    api_id
+  }
+  total: main_aggregatecase_menu(where: {AND: $query}) @transform(get: "_count.id") {
+    _count {
+      id
+    }
+  }
+}

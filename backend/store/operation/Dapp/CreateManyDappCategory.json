@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "title": "",
+  "remark": "",
+  "createTime": "2023-11-23T22:34:27.986482+08:00",
+  "updateTime": "2023-11-23T22:34:46.811107+08:00",
+  "deleteTime": "",
+  "path": "Dapp/CreateManyDappCategory",
+  "engine": 0,
+  "hooksConfiguration": null,
+  "configCustomized": false,
+  "cacheConfig": {
+    "enabled": false,
+    "maxAge": 120,
+    "public": false,
+    "staleWhileRevalidate": 30
+  },
+  "liveQueryConfig": {
+    "enabled": false,
+    "pollingIntervalSeconds": 10
+  },
+  "authenticationConfig": null
+}

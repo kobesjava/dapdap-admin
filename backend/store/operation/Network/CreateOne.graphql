@@ -1,0 +1,7 @@
+mutation MyQuery($chain_id: Int!, $name: String!, $technology: String = "", $description: String = "", $native_token: String = "", $milestones: String = "") {
+  data: dapdap_createOnenetwork(
+    data: {chain_id: $chain_id, name: $name, technology: $technology, description: $description, native_token: $native_token, milestones: $milestones}
+  ) {
+    id
+  }
+}

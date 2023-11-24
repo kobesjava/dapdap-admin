@@ -1,0 +1,25 @@
+query Getadmin_apilogList($take: Int = 10, $skip: Int = 0, $orderBy: [main_admin_apilogOrderByWithRelationInput], $query: main_admin_apilogWhereInput) {
+  data: main_findManyadmin_apilog(
+    skip: $skip
+    take: $take
+  orderBy: $orderBy
+    where: {AND: $query}) {
+    
+    id
+    createdat
+    updatedat
+    deletedat
+    ip
+    method
+    path
+    code
+    ua
+    userid
+    username
+  }
+  total: main_aggregateadmin_apilog(where: {AND: $query}) @transform(get: "_count.id") {
+    _count {
+      id
+    }
+  }
+}

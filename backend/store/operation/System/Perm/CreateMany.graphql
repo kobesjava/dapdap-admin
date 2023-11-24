@@ -1,0 +1,5 @@
+mutation MyQuery ($data: [main_admin_permissionCreateManyInput]!) @rbac(requireMatchAny: [admin]) {
+	data: main_createManyadmin_permission(skipDuplicates: true, data: $data) {
+		count
+	}
+}

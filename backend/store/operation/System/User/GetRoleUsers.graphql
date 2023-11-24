@@ -1,0 +1,21 @@
+query MyQuery($roleId: Int @internal, $userId: Int @internal, $code: String!) {
+  data:main_findManyadmin_role(where: {code: {equals: $code}}) {
+    id @export(as: "roleId")
+    remark
+    code
+    role:_join {
+      main_findManyadmin_role_user(where: {role_id: {equals: $roleId}}) {
+        role_id
+        user_id @export(as: "userId")
+        _join {
+          user:main_findManyadmin_user(where: {id: {equals: $userId}}) {
+            id
+            name
+            avatar
+            created_at
+          }
+        }
+      }
+    }
+  }
+}

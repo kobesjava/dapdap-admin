@@ -1,0 +1,7 @@
+query MyQuery {
+  logNum: main_aggregateadmin_apilog {
+    _count {
+      id
+    }
+  }
+}

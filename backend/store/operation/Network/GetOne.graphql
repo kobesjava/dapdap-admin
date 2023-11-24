@@ -1,0 +1,11 @@
+query GetOne($id: Int!) {
+  data: dapdap_findUniquenetwork(where: {id: $id}) {
+    id
+    chain_id
+    name
+    description
+    native_token
+    milestones
+    technology
+  }
+}

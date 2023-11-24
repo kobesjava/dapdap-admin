@@ -1,0 +1,5 @@
+mutation CreateCategory($name:String!) {
+  data: dapdap_createOnecategory(data: {name: $name}){
+    id
+  }
+}

@@ -1,0 +1,7 @@
+mutation MyQuery($id: Int!) @rbac(requireMatchAny: [admin]) {
+  main_deleteOnecase_menu(where: {id: $id}) {
+    api_id
+    create_time
+    icon
+  }
+}

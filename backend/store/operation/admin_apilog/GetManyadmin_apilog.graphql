@@ -1,0 +1,16 @@
+query GetManyadmin_apilog {
+  data: main_findManyadmin_apilog {
+    
+    id
+    createdat
+    updatedat
+    deletedat
+    ip
+    method
+    path
+    code
+    ua
+    userid
+    username
+  }
+}

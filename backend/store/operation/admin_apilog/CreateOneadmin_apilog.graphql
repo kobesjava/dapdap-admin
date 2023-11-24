@@ -1,0 +1,16 @@
+mutation CreateOneadmin_apilog($createdat: DateTime, $updatedat: DateTime!, $deletedat: DateTime, $ip: String!, $method: String!, $path: String!, $code: String!, $ua: String!, $userid: String!, $username: String!) {
+  data: main_createOneadmin_apilog(data: {createdat: $createdat, updatedat: $updatedat, deletedat: $deletedat, ip: $ip, method: $method, path: $path, code: $code, ua: $ua, userid: $userid, username: $username}) {
+    
+    id
+    createdat
+    updatedat
+    deletedat
+    ip
+    method
+    path
+    code
+    ua
+    userid
+    username
+  }
+}

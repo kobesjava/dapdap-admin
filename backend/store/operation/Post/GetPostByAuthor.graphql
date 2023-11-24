@@ -1,0 +1,6 @@
+mutation MyQuery($id: Int = 10, $name: String = "") {
+ data:main_updateOnecase_category(data: {name: {set: $name}}, where: {id: $id}) {
+    id
+    name
+  }
+}

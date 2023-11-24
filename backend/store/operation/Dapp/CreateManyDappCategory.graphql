@@ -1,0 +1,5 @@
+mutation CreateManyDappCategory($param:[dapdap_dapp_categoryCreateManyInput]!) {
+  data: dapdap_createManydapp_category(data: $param){
+    count
+  }
+}

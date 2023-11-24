@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "title": "",
+  "remark": "",
+  "createTime": "2023-11-23T10:18:57.521543+08:00",
+  "updateTime": "2023-11-23T11:33:26.060809+08:00",
+  "deleteTime": "",
+  "path": "Network/GetList",
+  "engine": 0,
+  "hooksConfiguration": null,
+  "configCustomized": false,
+  "cacheConfig": {
+    "enabled": false,
+    "maxAge": 120,
+    "public": false,
+    "staleWhileRevalidate": 30
+  },
+  "liveQueryConfig": {
+    "enabled": false,
+    "pollingIntervalSeconds": 10
+  },
+  "authenticationConfig": null
+}

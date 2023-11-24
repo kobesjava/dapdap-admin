@@ -1,0 +1,21 @@
+mutation UpdateOnecase_menu($id: Int!, $parentid: Int, $label: String, $path: String, $icon: String, $sort: Int, $level: Int, $name: String, $is_bottom: Int, $create_time: DateTime, $perms: String, $menu_type: String, $api_id: String) {
+  data: main_updateOnecase_menu(
+    data: {parentid: {set: $parentid}, label: {set: $label}, path: {set: $path}, icon: {set: $icon}, sort: {set: $sort}, level: {set: $level}, name: {set: $name}, is_bottom: {set: $is_bottom}, create_time: {set: $create_time}, perms: {set: $perms}, menu_type: {set: $menu_type}, api_id: {set: $api_id}}
+    where: {id: $id}
+  ) {
+    
+    id
+    parentid
+    label
+    path
+    icon
+    sort
+    level
+    name
+    is_bottom
+    create_time
+    perms
+    menu_type
+    api_id
+  }
+}

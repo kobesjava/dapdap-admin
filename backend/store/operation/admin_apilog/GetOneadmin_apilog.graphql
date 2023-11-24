@@ -1,0 +1,16 @@
+query GetOneadmin_apilog($id: Int!) {
+  data: main_findFirstadmin_apilog(where: {id: {equals: $id}}) {
+    
+    id
+    createdat
+    updatedat
+    deletedat
+    ip
+    method
+    path
+    code
+    ua
+    userid
+    username
+  }
+}

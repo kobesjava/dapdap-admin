@@ -1,0 +1,8 @@
+mutation DeleteManyCategory($ids: [Int]) @transaction {
+  data: dapdap_deleteManycategory(where: {id: {in: $ids}}) {
+    count
+  }
+  dapp_category: dapdap_deleteManydapp_category(where: {category_id: {in:  $ids}}) {
+    count
+  }
+}

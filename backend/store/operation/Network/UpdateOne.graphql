@@ -1,0 +1,8 @@
+mutation UpdateOne($id: Int!, $chain_id: Int!, $name: String!, $technology: String = "", $description: String = "", $native_token: String = "", $milestones: String = "") {
+  data: dapdap_updateOnenetwork(
+    data: {chain_id: {set: $chain_id}, name: {set: $name}, technology: {set: $technology}, description: {set: $description}, native_token: {set: $native_token}, milestones: {set: $milestones}}
+    where: {id: $id}
+  ) {
+    id
+  }
+}

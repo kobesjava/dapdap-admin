@@ -1,0 +1,8 @@
+mutation DeleteManyNetwork($ids: [Int]!) @transaction {
+  data: dapdap_deleteManynetwork(where: {id: {in: $ids}}) {
+    count
+  }
+  dapp_network: dapdap_deleteManydapp_network(where:{network_id: {in: $ids}}){
+    count
+  }
+}

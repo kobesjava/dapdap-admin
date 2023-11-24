@@ -1,0 +1,8 @@
+query MyQuery {
+  data: main_findManyadmin_permission {
+    createdAt
+    enabled
+    method
+    path
+  }
+}

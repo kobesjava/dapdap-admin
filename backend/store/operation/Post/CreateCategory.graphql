@@ -1,0 +1,6 @@
+mutation MyQuery($name: String = "",) {
+  data:main_createOnecase_category(data: {name: $name}) {
+    id
+    name
+  }
+}

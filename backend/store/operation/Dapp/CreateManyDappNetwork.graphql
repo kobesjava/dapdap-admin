@@ -1,0 +1,5 @@
+mutation CreateManyDappNetwork($param:[dapdap_dapp_networkCreateManyInput]!) {
+  data: dapdap_createManydapp_network(data: $param){
+    count
+  }
+}

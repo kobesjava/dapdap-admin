@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "title": "",
+  "remark": "",
+  "createTime": "2023-11-24T15:36:38.372708+08:00",
+  "updateTime": "",
+  "deleteTime": "",
+  "path": "case_menu/Getcase_menuList",
+  "engine": 0,
+  "hooksConfiguration": null,
+  "configCustomized": false,
+  "cacheConfig": null,
+  "liveQueryConfig": null,
+  "authenticationConfig": null
+}

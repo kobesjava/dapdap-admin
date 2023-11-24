@@ -1,0 +1,18 @@
+mutation CreateOnecase_menu($parentid: Int, $label: String!, $path: String, $icon: String, $sort: Int!, $level: Int!, $name: String, $is_bottom: Int, $create_time: DateTime, $perms: String, $menu_type: String, $api_id: String) {
+  data: main_createOnecase_menu(data: {parentid: $parentid, label: $label, path: $path, icon: $icon, sort: $sort, level: $level, name: $name, is_bottom: $is_bottom, create_time: $create_time, perms: $perms, menu_type: $menu_type, api_id: $api_id}) {
+    
+    id
+    parentid
+    label
+    path
+    icon
+    sort
+    level
+    name
+    is_bottom
+    create_time
+    perms
+    menu_type
+    api_id
+  }
+}

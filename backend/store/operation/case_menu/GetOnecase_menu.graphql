@@ -1,0 +1,18 @@
+query GetOnecase_menu($id: Int!) {
+  data: main_findFirstcase_menu(where: {id: {equals: $id}}) {
+    
+    id
+    parentid
+    label
+    path
+    icon
+    sort
+    level
+    name
+    is_bottom
+    create_time
+    perms
+    menu_type
+    api_id
+  }
+}

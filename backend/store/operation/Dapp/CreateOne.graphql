@@ -1,0 +1,7 @@
+mutation DappCreate($name: String!, $description: String, $native_token: String, $recommend: Boolean, $recommend_icon: String) {
+  data: dapdap_createOnedapp(
+    data: {name: $name, description: $description, native_token: $native_token, recommend: $recommend, recommend_icon: $recommend_icon}
+  ) {
+    id
+  }
+}

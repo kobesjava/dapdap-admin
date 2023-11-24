@@ -1,0 +1,19 @@
+mutation UpdateOneadmin_apilog($id: Int!, $createdat: DateTime, $updatedat: DateTime, $deletedat: DateTime, $ip: String, $method: String, $path: String, $code: String, $ua: String, $userid: String, $username: String) {
+  data: main_updateOneadmin_apilog(
+    data: {createdat: {set: $createdat}, updatedat: {set: $updatedat}, deletedat: {set: $deletedat}, ip: {set: $ip}, method: {set: $method}, path: {set: $path}, code: {set: $code}, ua: {set: $ua}, userid: {set: $userid}, username: {set: $username}}
+    where: {id: $id}
+  ) {
+    
+    id
+    createdat
+    updatedat
+    deletedat
+    ip
+    method
+    path
+    code
+    ua
+    userid
+    username
+  }
+}

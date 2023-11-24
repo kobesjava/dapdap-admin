@@ -1,0 +1,15 @@
+backend/exported
+.env
+fireboom
+backend/log
+main.sql
+backend/custom-go/generated
+casdoor_service
+backend/oidc/token_jwt_key.key
+backend/oidc/token_jwt_key.pem
+front/.env.development
+front/.env.production
+front/.env.staging
+front/build
+front/.vscode
+backend/custom-go

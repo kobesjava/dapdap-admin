@@ -1,0 +1,5 @@
+mutation DeleteOnecase_menu($id: Int!) {
+  data: main_deleteOnecase_menu(where: {id: $id}) {
+    id
+  }
+}

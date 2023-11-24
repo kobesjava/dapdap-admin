@@ -1,0 +1,14 @@
+mutation DeleteManyDapp($ids: [Int]!) @transaction {
+  data: dapdap_deleteManydapp(where: {id: {in: $ids}}) {
+    count
+  }
+  category: dapdap_deleteManydapp_category(where: {dapp_id: {in: $ids}}) {
+    count
+  }
+  relate: dapdap_deleteManydapp_relate(where: {dapp_id: {in: $ids}}) {
+    count
+  }
+  network: dapdap_deleteManydapp_network(where: {dapp_id: {in: $ids}}) {
+    count
+  }
+}

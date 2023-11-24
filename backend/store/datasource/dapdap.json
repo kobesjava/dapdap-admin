@@ -1,0 +1,22 @@
+{
+  "name": "dapdap",
+  "enabled": true,
+  "createTime": "2023-11-23T10:12:45.726806+08:00",
+  "updateTime": "2023-11-23T10:14:05.580326+08:00",
+  "deleteTime": "",
+  "cacheEnabled": false,
+  "kind": 3,
+  "customRest": null,
+  "customGraphql": null,
+  "customDatabase": {
+    "kind": 1,
+    "databaseUrl": null,
+    "databaseAlone": {
+      "host": "127.0.0.1",
+      "port": 5432,
+      "database": "dapdap",
+      "username": "jaki",
+      "password": "root"
+    }
+  }
+}

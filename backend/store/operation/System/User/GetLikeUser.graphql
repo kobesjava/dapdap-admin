@@ -1,0 +1,30 @@
+query MyQuery($name: String = "", $phone: String = "", $id: Int = 10, $userId: Int @internal, $roleId: Int @internal) {
+  data:main_findManyadmin_user(
+    where: {name: {contains: $name, endsWith: ""}, phone: {endsWith: "", contains: $phone}}
+  ) {
+    id @export(as: "userId")
+    name
+    phone
+    createdAt: created_at
+    avatar
+    user_role: _join {
+      data:main_findManyadmin_role_user(where: {user_id: {equals: $userId}}) {
+        role_id @export(as: "roleId")
+        role: _join {
+          main_findManyadmin_role(where: {id: {equals: $roleId}}) {
+            code
+            id
+            remark
+          }
+        }
+      }
+    }
+  }
+  data1:main_findUniqueadmin_user(where: {id: $id}) {
+    id
+    name
+    phone
+   createdAt: created_at
+    avatar
+  }
+}

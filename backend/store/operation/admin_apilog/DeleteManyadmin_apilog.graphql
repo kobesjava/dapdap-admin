@@ -1,0 +1,5 @@
+mutation DeleteManyadmin_apilog($ids: [Int]!) {
+  data: main_deleteManyadmin_apilog(where: {id: {in: $ids}}) {
+    count
+  }
+}

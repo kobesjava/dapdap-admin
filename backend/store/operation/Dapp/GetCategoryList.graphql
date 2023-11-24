@@ -1,0 +1,12 @@
+query GetCategoryList {
+  data: dapdap_findManycategory {
+    id
+    name
+    created_at
+  }
+  total: dapdap_aggregatecategory(where: {}) @transform(get: "_count.id") {
+    _count {
+      id
+    }
+  }
+}
