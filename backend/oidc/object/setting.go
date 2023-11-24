@@ -7,9 +7,9 @@ import (
 )
 
 type multipleConfig struct {
-	*MySQLConfig `mapstructure:"mysql"`
+	*SQLConfig `mapstructure:"pgsql"`
 }
-type MySQLConfig struct {
+type SQLConfig struct {
 	Host         string `mapstructure:"host"`
 	User         string `mapstructure:"user"`
 	Password     string `mapstructure:"password"`

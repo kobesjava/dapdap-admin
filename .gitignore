@@ -8,8 +8,10 @@ backend/custom-go/generated_latest
 casdoor_service
 backend/oidc/token_jwt_key.key
 backend/oidc/token_jwt_key.pem
+backend/oidc/conf/config.yaml
 front/.env.development
 front/.env.production
 front/.env.staging
 front/.vscode
 backend/custom-go/custom-go
+
