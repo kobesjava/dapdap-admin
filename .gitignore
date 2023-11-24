@@ -12,4 +12,4 @@ front/.env.production
 front/.env.staging
 front/build
 front/.vscode
-backend/custom-go
+backend/custom-go/custom-go
