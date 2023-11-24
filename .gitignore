@@ -4,6 +4,7 @@ fireboom
 backend/log
 main.sql
 backend/custom-go/generated
+backend/custom-go/generated_latest
 casdoor_service
 backend/oidc/token_jwt_key.key
 backend/oidc/token_jwt_key.pem
