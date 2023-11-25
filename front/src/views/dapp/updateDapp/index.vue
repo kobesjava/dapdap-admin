@@ -70,8 +70,7 @@ import { ElForm, ElMessage, ElUpload, ElIcon } from "element-plus";
 import { useTags } from "@/layout/hooks/useTag";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import axios from 'axios';
-import { formatToken, getToken } from '@/utils/auth';
-import { da } from 'element-plus/es/locale';
+//import { formatToken, getToken } from '@/utils/auth';
 const { VITE_ADMIN_HOST, VITE_S3_URL } = import.meta.env;
 
 

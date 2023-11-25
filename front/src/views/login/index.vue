@@ -9,21 +9,21 @@ import { $t, transformI18n } from "@/plugins/i18n";
 import { useLayout } from "@/layout/hooks/useLayout";
 import { useUserStoreHook } from "@/store/modules/user";
 import { addPathMatch } from "@/router/utils";
-import { bg, avatar, illustration } from "./utils/static";
+//import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref, reactive, toRaw, onMounted, onBeforeUnmount, computed } from "vue";
 import { useTranslationLang } from "@/layout/hooks/useTranslationLang";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 import Motion from "./utils/motion";
 import phone from "./phone.vue";
-import dayIcon from "@/assets/svg/day.svg?component";
-import darkIcon from "@/assets/svg/dark.svg?component";
+//import dayIcon from "@/assets/svg/day.svg?component";
+//import darkIcon from "@/assets/svg/dark.svg?component";
 import globalization from "@/assets/svg/globalization.svg?component";
 import Lock from "@iconify-icons/ri/lock-fill";
 import Check from "@iconify-icons/ep/check";
 import User from "@iconify-icons/ri/user-3-fill";
 import { usePermissionStoreHook } from "@/store/modules/permission";
-import { setInterval } from "timers";
+//import { setInterval } from "timers";
 import { removeToken } from "@/utils/auth";
 import { Md5 } from "ts-md5"
 const salt = "qwertyuiop";
@@ -108,10 +108,6 @@ onBeforeUnmount(() => {
   <div class="select-none">
     <!-- <img :src="bg" class="wave" /> -->
     <div class="flex-c absolute right-5 top-3">
-      <!-- 主题 -->
-      <!-- <el-switch v-model="dataTheme" inline-prompt :active-icon="dayIcon" :inactive-icon="darkIcon"
-        @change="dataThemeChange" /> -->
-      <!-- 国际化 -->
       <el-dropdown trigger="click">
         <globalization
           class="hover:text-primary hover:!bg-[transparent] w-[20px] h-[20px] ml-1.5 cursor-pointer outline-none duration-300" />
@@ -133,75 +129,12 @@ onBeforeUnmount(() => {
         </template>
       </el-dropdown>
     </div>
-    <div class="lefttop">
-      <a href="https://www.fireboom.io/" target=“_blank”>
-        <img src="/src/assets/login/Logo.png" style="width:50%;" />
-      </a>
-    </div>
     <div class="login-container">
-      <div class="img">
-        <div class="title">
-          <span class="highLight">前端</span>变全栈, <span class="highLight">后端</span>不搬砖
-          <hr class="style-one">
-          <ul class="table">
-            <li><el-icon class="checkIcon"><Select /></el-icon>&nbsp;支持连接自定义数据库和三方数据源</li>
-            <li><el-icon class="checkIcon"><Select /></el-icon>&nbsp;多语言兼容, 支持主流编程语言</li>
-            <li><el-icon class="checkIcon"><Select /></el-icon>&nbsp;可视化操作面板, 简单易学</li>
-          </ul>
-          <div class="cards">
-            <div class="card">
-              <img src="/src/assets/login/database.png" class="cardsImg">
-              <div class="cardTitle">
-                数据库建模
-              </div>
-              <div class="cardContent">
-                内置数据库建模功能，技术小白也能驾驭。
-              </div>
-            </div>
-            <div class="card">
-              <img src="/src/assets/login/Github.png" class="cardsImg">
-              <div class="cardTitle">
-                GitHub集成
-              </div>
-              <div class="cardContent">
-                不断地将生成的应用程序推送到你的GitHub存储库，实现版本管理。
-              </div>
-            </div>
-            <div class="card">
-              <img src="/src/assets/login/SDK.png" class="cardsImg">
-              <div class="cardTitle">
-                SDK生成
-              </div>
-              <div class="cardContent">
-                生成带有自动登录功能的客户端SDK方便前后端对接接口。
-              </div>
-            </div>
-            <div class="card">
-              <img src="/src/assets/login/VSCODE.png" class="cardsImg">
-              <div class="cardTitle">
-                VSCODE
-              </div>
-              <div class="cardContent">
-                提供vscode插件，方便高端玩家使用更深功能。
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="login-box">
-
         <div class="login-form">
           <!-- <avatar class="avatar" /> -->
-          <div class="loginTitle">登录你的飞布账号</div>
-          <div class="signUp">还没有账号? <el-button type="danger" link><span class="signUpNow">立即注册</span> <el-icon style="border-radius: 50%;  background-color: #FE4D60; font-size:10px;margin-top: -3px;margin-left: 2px;
-  color: white;">
-                <ArrowRight />
-              </el-icon>
-            </el-button>
-          </div>
-          <!-- <Motion>
-            <h2 class="outline-none">{{ title }}</h2>
-          </Motion> -->
+          <div class="loginTitle">登录DapDap后台账号</div>
+          <div class="signUp"></div>
           <el-form ref="ruleFormRef" :model="ruleForm" :rules="loginRules" size="large" v-if="loginType === 'password'">
             <Motion :delay="100">
               <el-form-item :rules="[
@@ -224,14 +157,14 @@ onBeforeUnmount(() => {
             </Motion>
             <Motion :delay="150">
               <el-checkbox size="large"></el-checkbox> <span style="
-                position: absolute;
-                top: 11px;
-                left: 19px;
-                font-family: PingFangSC-Regular;
-                font-size: 12px;
-                color: rgba(95,98,105,0.60);
-                margin-bottom: 10px;
-                ">记住账号
+                                                                            position: absolute;
+                                                                            top: 11px;
+                                                                            left: 19px;
+                                                                            font-family: PingFangSC-Regular;
+                                                                            font-size: 12px;
+                                                                            color: rgba(95,98,105,0.60);
+                                                                            margin-bottom: 10px;
+                                                                            ">记住账号
               </span>
             </Motion>
             <Motion :delay="250">
@@ -240,19 +173,15 @@ onBeforeUnmount(() => {
                 {{ t("login.login") }}
               </el-button>
             </Motion>
-            <Motion :delay="300">
-              <div class="w-full h-[20px] flex justify-between items-center mt-4">
-                <el-button class="w-full mt-4" size="default" @click="useUserStoreHook().SET_LOGINTYPE('sms')">
-                  {{ t("login.loginBySms") }}
-                </el-button>
-              </div>
-            </Motion>
+            <!-- <Motion :delay="300">
+                          <div class="w-full h-[20px] flex justify-between items-center mt-4">
+                            <el-button class="w-full mt-4" size="default" @click="useUserStoreHook().SET_LOGINTYPE('sms')">
+                              {{ t("login.loginBySms") }}
+                            </el-button>
+                          </div>
+                        </Motion> -->
           </el-form>
-
-
-          <!-- 手机号登录 -->
           <phone v-if="loginType === 'sms'" />
-          <div class="xieyi">点击登录表示你同意 <span class="fy">服务协议</span> 和 <span class="fy">隐私协议</span></div>
         </div>
       </div>
     </div>
@@ -411,7 +340,7 @@ hr.style-one {
 }
 
 .signUp {
-  height: 47px;
+  height: 30px;
   font-family: PingFangSC-Regular;
   font-size: 12px;
   color: rgba(40, 31, 31, 0.80);

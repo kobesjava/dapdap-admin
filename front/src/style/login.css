@@ -10,8 +10,8 @@
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: 1fr;
+  //grid-template-columns: 1fr 2fr;
+  //grid-template-rows: 1fr;
   align-items: center;
   justify-items: center;  
   align-items: center;
@@ -34,9 +34,10 @@
 }
 
 .login-box {
-  display: flex;
-  /* align-items: center;
-  text-align: center; */
+  /* display: flex;
+  text-align: center;
+  align-items: center; 
+  justify-content: center; */
 }
 
 .login-form {

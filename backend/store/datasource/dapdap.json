@@ -2,7 +2,7 @@
   "name": "dapdap",
   "enabled": true,
   "createTime": "2023-11-23T10:12:45.726806+08:00",
-  "updateTime": "2023-11-23T10:14:05.580326+08:00",
+  "updateTime": "2023-11-25T13:59:33.341658+08:00",
   "deleteTime": "",
   "cacheEnabled": false,
   "kind": 3,
@@ -12,11 +12,11 @@
     "kind": 1,
     "databaseUrl": null,
     "databaseAlone": {
-      "host": "173.255.250.105",
+      "host": "localhost",
       "port": 5432,
       "database": "dapdap",
-      "username": "postgres",
-      "password": "PetIZKT3ykL8O"
+      "username": "jaki",
+      "password": "root"
     }
   }
 }
