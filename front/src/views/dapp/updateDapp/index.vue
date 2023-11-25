@@ -169,6 +169,7 @@ async function handleQuery() {
           categoryId: cate.category_id,
           id: cate.id
         })
+        formData.category.push(cate.category_id)
       }
     }
     if (data.data.network.data.length > 0) {
@@ -177,6 +178,7 @@ async function handleQuery() {
           networkId: network.network_id,
           id: network.id,
         })
+        formData.network.push(network.network_id)
       }
     }
   }
