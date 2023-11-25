@@ -86,8 +86,6 @@ export const updateDapp = (
   recommend?: number,
   recommend_icon?: string
 ) => {
-  console.log("recommend_icon: " + recommend_icon);
-
   const networkParams: {
     dapp_id: number;
     network_id: number;

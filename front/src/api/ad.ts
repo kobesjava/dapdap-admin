@@ -18,3 +18,23 @@ export const createOne = (
     }
   });
 };
+
+// 更新ad
+export const updateAd = (
+  id: number,
+  category: number,
+  category_id: number,
+  ad_link?: string,
+  ad_images?: string
+) => {
+  const categoryParam = category == 1 ? "network" : "dapp";
+  return axios.post<any>(VITE_ADMIN_HOST + `/operations/Ad/UpdateOne`, {
+    data: {
+      id: id,
+      category: categoryParam,
+      category_id: Number(category_id),
+      ad_link: ad_link,
+      ad_images: ad_images
+    }
+  });
+};

@@ -39,6 +39,14 @@ export default {
       meta: {
         title: "Network编辑"
       }
+    },
+    {
+      path: "/ad/updateAd",
+      name: "AdUpdate",
+      component: () => import("@/views/ad/updateAd/index.vue"),
+      meta: {
+        title: "广告编辑"
+      }
     }
   ]
 } as RouteConfigsTable;

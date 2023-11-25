@@ -150,7 +150,9 @@ import type {
   Ad__GetListInput,
   Ad__GetListResponseData,
   Ad__DeleteManyInput,
-  Ad__DeleteManyResponseData
+  Ad__DeleteManyResponseData,
+  Ad__GetOneInput,
+  Ad__GetOneResponseData
 } from "./models";
 
 export const WUNDERGRAPH_S3_ENABLED = true;
@@ -399,6 +401,9 @@ export const operationMetadata: OperationMetadata = {
     requiresAuthentication: false
   },
   "Ad/DeleteMany": {
+    requiresAuthentication: false
+  },
+  "Ad/GetOne": {
     requiresAuthentication: false
   }
 };
@@ -670,6 +675,11 @@ export type Queries = {
   "Ad/GetList": {
     input: Ad__GetListInput;
     data: Ad__GetListResponseData;
+    requiresAuthentication: false;
+  };
+  "Ad/GetOne": {
+    input: Ad__GetOneInput;
+    data: Ad__GetOneResponseData;
     requiresAuthentication: false;
   };
 };

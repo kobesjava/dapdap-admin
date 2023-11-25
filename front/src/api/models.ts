@@ -2008,3 +2008,15 @@ export interface Ad__DeleteManyResponseData {
     count?: number;
   };
 }
+export interface Ad__GetOneInput {
+  id: number;
+}
+export interface Ad__GetOneResponseData {
+  data?: {
+    id?: number;
+    category_id?: number;
+    category?: string;
+    ad_link?: string;
+    ad_images?: string;
+  };
+}

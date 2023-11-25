@@ -175,9 +175,9 @@ async function handleSubmit() {
   }
   dataFormRef.value.validate(async (isValid: boolean) => {
     if (isValid) {
-      //const username = useUserStoreHook().username;
-      const data = getToken();
       if (File) {
+        //const username = useUserStoreHook().username;
+        const data = getToken();
         await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -336,7 +336,7 @@ onMounted(() => {
         border>
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="Id" prop="id" width="60" align="center" ellipsis />
-        <el-table-column label="名称" prop="name" width="150" align="center" ellipsis />
+        <el-table-column label="名称" prop="name" width="200" align="center" ellipsis />
         <el-table-column label="类别" prop="categoryContent" width="150" align="center" ellipsis />
         <el-table-column label="链" prop="networkContent" width="150" align="center" ellipsis />
         <el-table-column label="描述" prop="description" width="150" align="center" ellipsis />
@@ -351,8 +351,8 @@ onMounted(() => {
           </template>
         </el-table-column>
         <el-table-column label="发布时间" prop="created_at" align="center"
-          :formatter="(row, col, v) => (v ? new Date(v).toLocaleDateString() : '')" width="150" />
-        <el-table-column fixed="right" label="操作" align="center" min-width="220">
+          :formatter="(row, col, v) => (v ? new Date(v).toLocaleDateString() : '')" width="100" />
+        <el-table-column fixed="right" label="操作" align="center" min-width="150">
           <template #default="scope">
             <el-button type="primary" link size="small" @click.stop="updateDapp(scope.row)">
               <Icon icon="ep:edit" />编辑

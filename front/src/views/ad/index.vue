@@ -218,9 +218,9 @@ function changeImage(file) {
 /**
  * 编辑
  */
-function updateDapp(post) {
+function updateAd(post) {
   router.push({
-    name: "DappUpdate",
+    name: "AdUpdate",
     query: {
       id: post.id
     }
@@ -267,7 +267,7 @@ onMounted(() => {
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center" min-width="220">
           <template #default="scope">
-            <el-button type="primary" link size="small" @click.stop="updateDapp(scope.row)">
+            <el-button type="primary" link size="small" @click.stop="updateAd(scope.row)">
               <Icon icon="ep:edit" />编辑
             </el-button>
           </template>

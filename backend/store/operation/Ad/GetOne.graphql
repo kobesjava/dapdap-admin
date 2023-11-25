@@ -1,0 +1,9 @@
+query GetOne($id: Int!) {
+  data: dapdap_findUniquead(where: {id: $id}) {
+    id
+    category
+    category_id
+    ad_link
+    ad_images
+  }
+}

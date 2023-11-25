@@ -2,37 +2,25 @@
   <div class="app-container">
     <el-card>
       <template #header>
-        编辑Dapp信息
+        编辑广告信息
       </template>
       <el-form ref="dataFormRef" :model="formData" :rules="rules" label-width="150px" v-loading="loading">
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="formData.name" placeholder="请输入名称" style="width: 200px" />
-        </el-form-item>
         <el-form-item label="类别" prop="category">
-          <el-checkbox-group v-model="formData.category">
-            <el-checkbox v-for="cate in categorySource" :label="cate.id">{{ cate.name }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="链" prop="network">
-          <el-checkbox-group v-model="formData.network">
-            <el-checkbox v-for="network in networkSource" :label="network.id">{{ network.name }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="描述" prop="description">
-          <el-input type="textarea" :rows="5" v-model="formData.description" placeholder="请输入描述" />
-        </el-form-item>
-        <el-form-item label="NativeToken" prop="native_token">
-          <el-input v-model="formData.native_token" placeholder="请输入NativeToken" />
-        </el-form-item>
-        <el-form-item label="推荐展示" prop="recommend">
-          <el-radio-group v-model="formData.recommend">
-            <el-radio :label="1">推荐</el-radio>
-            <el-radio :label="0">不推荐</el-radio>
+          <el-radio-group v-model="formData.category">
+            <el-radio :label="1">Network</el-radio>
+            <el-radio :label="2">Dapp</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="推荐展示图片" prop="recommend_icon">
+        <el-form-item label="类别ID" prop="category_id">
+          <el-input v-model="formData.category_id" placeholder="请输入类别ID" />
+        </el-form-item>
+        <el-form-item label="广告链接" prop="ad_link">
+          <el-input v-model="formData.ad_link" placeholder="请输入广告连接" />
+        </el-form-item>
+        <el-form-item label="广告图片" prop="ad_images">
           <el-upload class="avatar-uploader" action="#" :show-file-list="false" accept="image/jpg,image/jpeg,image/png"
-            :before-upload="beforeImageUpload" :on-change="changeImage">
+            :on-success="handleImageSuccess" :before-upload="beforeImageUpload" :on-change="changeImage"
+            :auto-upload="false" :file-list="fileList">
             <img v-if="imageUrl" :src="imageUrl" class="avatar" title="点击重新上传" />
             <el-icon v-else class="avatar-uploader-icon">
               <plus />
@@ -61,10 +49,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import api, { convertPageQuery } from "@/api";
+import api from "@/api";
 import { message } from '@/utils/message';
 import router from "@/router";
-import { updateDapp } from "@/api/dapp";
+import { updateAd } from "@/api/ad";
 import { ElForm, ElMessage, ElUpload, ElIcon } from "element-plus";
 import { formatToken, getToken } from '@/utils/auth';
 import { useTags } from "@/layout/hooks/useTag";
@@ -74,13 +62,10 @@ const { VITE_ADMIN_HOST, VITE_S3_URL } = import.meta.env;
 
 
 const rules = ref({
-  name: [{ required: true, message: "请输入名称", trigger: "blur" }],
   category: [{ required: true, message: "请选择类别", trigger: "blur" }],
-  network: [{ required: true, message: "请选择链", trigger: "blur" }],
-  description: [{ required: false, message: "请输入描述", trigger: "blur" }],
-  native_token: [{ required: false, message: "请输入NativeToken", trigger: "blur" }],
-  recommend: [{ required: false, message: "请选择是否推荐展示", trigger: "blur" }],
-  recommend_icon: [{ required: false, message: "请选择推荐展示图片", trigger: "blur" }],
+  category_id: [{ required: true, message: "请输入类别ID", trigger: "blur" }],
+  ad_images: [{ required: true, message: "请选择广告图片", trigger: "blur" }],
+  ad_link: [{ required: false, message: "请输入广告链接", trigger: "blur" }],
 });
 const loading = ref(false);
 const route = useRoute();
@@ -88,19 +73,13 @@ const imageUrl = ref('');
 const File = ref();
 const dataFormRef = ref(ElForm);
 const { multiTags } = useTags();
-const categorySource = ref([]);
-const networkSource = ref([]);
-const currentNetwork = ref<{ id: number, networkId: number }[]>([]);
-const currentCategory = ref<{ id: number, categoryId: number }[]>([]);
+const fileList = ref([]);
 const formData = reactive({
   id: 0,
-  name: "",
-  description: "",
-  native_token: "",
-  recommend: 0,
-  recommend_icon: "",
-  category: [],
-  network: [],
+  category: null,
+  category_id: null,
+  ad_link: "",
+  ad_images: "",
 })
 
 function beforeImageUpload(rawFile) {
@@ -115,6 +94,10 @@ function beforeImageUpload(rawFile) {
   }
   return true;
 }
+function handleImageSuccess(res, file) {
+  imageUrl.value = URL.createObjectURL(file.raw!)
+  formData.ad_images = imageUrl.value
+}
 /**
  * 上传文件
  * @param file 
@@ -124,65 +107,21 @@ function changeImage(file) {
   imageUrl.value = URL.createObjectURL(file.raw!)
 }
 
-async function initCategoryData() {
-  const { error, data } = await api.query({
-    operationName: "Dapp/GetCategoryList",
-  });
-  if (!error) {
-    categorySource.value = data?.data
-  }
-}
-
-async function initNetworkData() {
-  const params = reactive<PageQuery>({
-    pageNum: 1,
-    pageSize: 1000
-  });
-  const { error, data } = await api.query({
-    operationName: "Network/GetList",
-    input: convertPageQuery(params, null)
-  });
-  if (!error) {
-    networkSource.value = data?.data
-  }
-}
-
 async function handleQuery() {
   const { error, data } = await api.query({
-    operationName: "Dapp/GetOne",
+    operationName: "Ad/GetOne",
     input: { id: Number(route.query?.id) }
   });
   if (!error) {
     formData.id = data.data.id;
-    formData.name = data.data.name;
-    formData.description = data.data.description;
-    formData.native_token = data.data.native_token;
-    formData.recommend = data.data.recommend ? 1 : 0;
-    formData.recommend_icon = data.data.recommend_icon;
-    if (data.data.recommend_icon) {
-      imageUrl.value = VITE_S3_URL + data.data.recommend_icon;
-    }
-    if (data.data.category.data.length > 0) {
-      for (let cate of data.data.category.data) {
-        currentCategory.value.push({
-          categoryId: cate.category_id,
-          id: cate.id
-        })
-        formData.category.push(cate.category_id)
-      }
-    }
-    if (data.data.network.data.length > 0) {
-      for (let network of data.data.network.data) {
-        currentNetwork.value.push({
-          networkId: network.network_id,
-          id: network.id,
-        })
-        formData.network.push(network.network_id)
-      }
+    formData.category_id = data.data.category_id;
+    formData.category = data.data.category;
+    formData.ad_link = data.data.ad_link;
+    formData.ad_images = data.data.ad_images;
+    if (data.data.ad_images.length > 0) {
+      imageUrl.value = VITE_S3_URL + data.data.ad_images;
     }
   }
-  await initCategoryData()
-  await initNetworkData()
 }
 
 /**
@@ -198,14 +137,14 @@ async function onSubmitUpdate() {
         "Authorization": formatToken(data.accessToken),
       }
     }).then(res => {
-      formData.recommend_icon = res.data[0].key;
+      formData.ad_images = res.data[0].key;
     }).catch(err => {
       ElMessage.error(err)
     })
   }
   dataFormRef.value.validate(async (isValid: boolean) => {
     if (isValid) {
-      await updateDapp(formData.id, formData.name, currentNetwork.value, currentCategory.value, formData.network, formData.category, formData.description, formData.native_token, formData.recommend, formData.recommend_icon).then(res => {
+      await updateAd(formData.id, formData.category, formData.category_id, formData.ad_link, formData.ad_images).then(res => {
         ElMessage.success("修改成功");
         close();
       }).catch(error => {
@@ -227,7 +166,7 @@ onMounted(() => {
 function close() {
   // 关闭当前标签页
   const valueIndex: number = multiTags.value.findIndex((item: any) => {
-    return item.path === "/dapp/updateDapp";
+    return item.path === "/ad/updateAd";
   })
   const spliceRoute = (startIndex: number, length: number): void => {
     useMultiTagsStoreHook().handleTags("splice", "", { startIndex, length });
@@ -235,7 +174,7 @@ function close() {
   spliceRoute(valueIndex, 1);
   // 跳转到上一页
   router.replace({
-    name: "Dapp",
+    name: "Ad",
   });
 }
 </script>
