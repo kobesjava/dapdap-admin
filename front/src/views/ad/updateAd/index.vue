@@ -115,7 +115,11 @@ async function handleQuery() {
   if (!error) {
     formData.id = data.data.id;
     formData.category_id = data.data.category_id;
-    formData.category = data.data.category;
+    if (data.data.category.toLowerCase() === "network") {
+      formData.category = 1
+    } else if (data.data.category.toLowerCase() === "dapp") {
+      formData.category = 2
+    }
     formData.ad_link = data.data.ad_link;
     formData.ad_images = data.data.ad_images;
     if (data.data.ad_images.length > 0) {
