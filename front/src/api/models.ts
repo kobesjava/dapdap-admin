@@ -1983,3 +1983,20 @@ export interface Network__GetOneResponseData {
     milestones?: string;
   };
 }
+
+export interface Ad__GetListInput {
+  skip?: number;
+  take?: number;
+}
+export interface Ad__GetListResponseData {
+  data?: {
+    id?: number;
+    category_id?: number;
+    category?: string;
+    ad_link?: string;
+    ad_images?: string;
+    created_at?: string;
+    update_at?: string;
+  }[];
+  total?: number;
+}

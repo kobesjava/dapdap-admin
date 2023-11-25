@@ -13,7 +13,6 @@ import {
 } from "vue-router";
 import {
   ascending,
-  getTopMenu,
   addPathMatch,
   isOneOfArray,
   getHistoryMode,
@@ -23,7 +22,7 @@ import {
   formatFlatteningRoutes
 } from "./utils";
 import { buildHierarchyTree } from "@/utils/tree";
-import { isUrl, openLink, storageSession, isAllEmpty } from "@pureadmin/utils";
+import { isUrl, openLink, storageSession } from "@pureadmin/utils";
 
 import remainingRouter from "./modules/remaining";
 

@@ -1,0 +1,13 @@
+query GetAdList($take: Int = 20, $skip: Int = 0) {
+  dapdap_findUniquenetwork( skip: $skip
+    take: $take
+    orderBy: {id: asc}){
+    id
+    
+  }
+  total: dapdap_aggregatenetwork(where:{}) @transform(get: "_count.id") {
+    _count {
+      id
+    }
+  }
+}

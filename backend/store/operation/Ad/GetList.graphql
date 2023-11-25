@@ -1,0 +1,15 @@
+query GetList($take: Int = 20, $skip: Int = 0) {
+  data: dapdap_findManyad(
+    skip: $skip
+    take: $take
+    orderBy: {updated_at: desc}
+    where: {}
+  ) {
+    id
+    category
+    category_id
+    ad_link
+    ad_images
+    updated_at
+  }
+}

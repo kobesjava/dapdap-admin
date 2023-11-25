@@ -1,0 +1,7 @@
+mutation CreateOne($category: String!, $category_id: Int!, $ad_link: String, $ad_images: String) {
+  data: dapdap_createOnead(
+    data: {category_id: $category_id, category: $category, ad_link: $ad_link, ad_images: $ad_images}
+  ) {
+    id
+  }
+}
