@@ -1,0 +1,8 @@
+mutation UpdateOne($id: Int!, $category: String, $category_id: Int, $ad_link: String, $ad_images: String) {
+  data: dapdap_updateOnead(
+    data: {category: {set: $category}, category_id: {set: $category_id}, ad_link: {set: $ad_link}, ad_images: {set: $ad_images}}
+    where: {id: $id}
+  ) {
+    id
+  }
+}

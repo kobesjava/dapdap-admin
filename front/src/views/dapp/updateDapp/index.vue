@@ -190,7 +190,7 @@ async function handleQuery() {
  */
 async function onSubmitUpdate() {
   loading.value = true;
-  if (File) {
+  if (File.value) {
     const data = getToken();
     await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File, {
       headers: {
