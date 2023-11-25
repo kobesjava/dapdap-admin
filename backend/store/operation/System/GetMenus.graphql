@@ -6,7 +6,7 @@ query MyQuery ($pid: Int@internal) @rbac(requireMatchAny: [admin]) {
 		name
 		sort
 		children: _join @transform(get: "main_findManycase_menu") {
-			main_findManycase_menu(where: {parentId:{equals:$pid}}, orderBy: {sort:asc}) {
+			main_findManycase_menu(where: {parentid:{equals:$pid}}, orderBy: {sort:asc}) {
 				id
 				path
 				name

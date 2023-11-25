@@ -1,6 +1,6 @@
 query MyQuery {
   data: main_findManyadmin_permission {
-    createdAt
+    createdat
     enabled
     method
     path

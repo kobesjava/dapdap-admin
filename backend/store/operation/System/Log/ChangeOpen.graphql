@@ -1,6 +1,6 @@
-mutation MyQuery($set: Boolean = false) @rbac(requireMatchAny: [admin, user]) {
-  data:main_updateOneadmin_dic(where: {id: 1}, data: {isOpen: {set: $set}}) {
+mutation MyQuery($set: Int) @rbac(requireMatchAny: [admin, user]) {
+  data:main_updateOneadmin_dic(where: {id: 1}, data: {isopen: {set: $set}}) {
     id
-    isOpen
+    isopen
   }
 }

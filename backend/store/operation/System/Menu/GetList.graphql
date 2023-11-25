@@ -6,7 +6,7 @@ query GetMenuList($take: Int = 10, $skip: Int = 0, $orderBy: [main_case_menuOrde
     where: {AND: $query}
   ) {
     id
-    parentId
+    parentid
     label
     path
     icon

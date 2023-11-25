@@ -4,9 +4,9 @@ query MyQuery($skip: Int = 5, $take: Int = 10, $orderBy: [main_admin_apilogOrder
     method
     ip
     path
-    updatedAt
+    updatedat
     ua
-    userName
-    userId
+    username
+    userid
   }
 }

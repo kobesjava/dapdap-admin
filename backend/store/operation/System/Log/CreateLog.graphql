@@ -1,14 +1,14 @@
 mutation MyQuery($ip: String = "", $method: String = "", $path: String = "", $updatedAt: DateTime = "", $code: String = "", $ua: String = "", $userId: String = "", $userName: String = "") {
   data:main_createOneadmin_apilog(
-    data: {updatedAt: $updatedAt, ip: $ip, method: $method, path: $path, code: $code, ua: $ua, userId: $userId, userName: $userName}
+    data: {updatedat: $updatedAt, ip: $ip, method: $method, path: $path, code: $code, ua: $ua, userid: $userId, username: $userName}
   ) {
     ip
     method
     path
     id
-    updatedAt
+    updatedat
     ua
-    userId
-    userName
+    userid
+    username
   }
 } 

@@ -76,11 +76,11 @@
     null,
     {
       "kind": 0,
-      "staticVariableContent": "http://localhost:9123/#/workbench/userInfo"
+      "staticVariableContent": "http://139.162.85.48:9123/#/workbench/userInfo"
     },
     {
       "kind": 0,
-      "staticVariableContent": "http://localhost:9123/#/workbench/rapi/loginBack"
+      "staticVariableContent": "http://139.162.85.48:9123/#/workbench/rapi/loginBack"
     }
   ],
   "authorizedRedirectUriRegexes": null,

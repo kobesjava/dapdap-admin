@@ -12,11 +12,11 @@
     "kind": 1,
     "databaseUrl": null,
     "databaseAlone": {
-      "host": "127.0.0.1",
+      "host": "173.255.250.105",
       "port": 5432,
       "database": "dapdap",
-      "username": "jaki",
-      "password": "root"
+      "username": "postgres",
+      "password": "PetIZKT3ykL8O"
     }
   }
 }
