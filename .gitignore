@@ -12,6 +12,8 @@ backend/oidc/token_jwt_key.pem
 backend/oidc/conf/config.yaml
 backend/custom-go/custom-go
 backend/template/
+backend/store/datasource/main.json
+backend/store/datasource/dapdap.json
 casdoor_service
 front/.env.development
 front/.env.production
