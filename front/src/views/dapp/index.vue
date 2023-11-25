@@ -177,8 +177,8 @@ async function handleSubmit() {
     if (isValid) {
       //const username = useUserStoreHook().username;
       const data = getToken();
-      if (File.value) {
-        await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File.value, {
+      if (File) {
+        await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File, {
           headers: {
             "Content-Type": "multipart/form-data",
             "Authorization": formatToken(data.accessToken),
@@ -287,9 +287,11 @@ function beforeImageUpload(rawFile) {
   return true;
 }
 function handleImageSuccess(res, file) {
+  console.log("handleImageSuccess: " + file.value)
   imageUrl.value = URL.createObjectURL(file.raw!)
 }
 function changeImage(file) {
+  console.log("changeImage: " + file.value)
   File = file;
   imageUrl.value = URL.createObjectURL(file.raw!)
 }

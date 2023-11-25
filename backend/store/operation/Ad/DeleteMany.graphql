@@ -1,0 +1,5 @@
+mutation DeleteMany($ids: [Int]) {
+  data: dapdap_deleteManyad(where: {id: {in: $ids}}) {
+    count
+  }
+}

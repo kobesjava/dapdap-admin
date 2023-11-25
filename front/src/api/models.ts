@@ -2000,3 +2000,11 @@ export interface Ad__GetListResponseData {
   }[];
   total?: number;
 }
+export interface Ad__DeleteManyInput {
+  ids: {}[];
+}
+export interface Ad__DeleteManyResponseData {
+  data?: {
+    count?: number;
+  };
+}

@@ -63,6 +63,13 @@ async function handleQuery() {
     input: convertPageQuery(queryParams, null)
   });
   if (!error) {
+    if (data!.data!.length > 0) {
+      for (let ad of data!.data!) {
+        if (ad.ad_images.length > 0) {
+          ad.ad_images = VITE_S3_URL + ad.ad_images
+        }
+      }
+    }
     dataSource.value = data!.data!;
     total.value = data!.total!;
     loading.value = false;
@@ -104,13 +111,12 @@ async function openDialog() {
  */
 async function handleSubmit() {
   loading.value = true;
-  //const data = getToken();
   dataFormRef.value.validate(async (isValid: boolean) => {
     if (isValid) {
       //const username = useUserStoreHook().username;
       const data = getToken();
       let uploadSuccess = false
-      await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File.value, {
+      await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": formatToken(data.accessToken),
@@ -175,14 +181,14 @@ function handleDelete(id?: number) {
     cancelButtonText: "取消",
     type: "warning"
   }).then(async () => {
-    // const { error } = await api.mutate({
-    //   operationName: "Dapp/DeleteMany",
-    //   input: { ids: idList }
-    // });
-    // if (!error) {
-    //   ElMessage.success("删除成功");
-    //   resetQuery();
-    // }
+    const { error } = await api.mutate({
+      operationName: "Ad/DeleteMany",
+      input: { ids: idList }
+    });
+    if (!error) {
+      ElMessage.success("删除成功");
+      resetQuery();
+    }
   });
 }
 
@@ -254,10 +260,9 @@ onMounted(() => {
         <el-table-column label="广告链接" prop="ad_link" width="250" align="center" ellipsis />
         <el-table-column label="广告图片" width="200" align="center" ellipsis>
           <template #default="scope">
-            <el-image
-              v-if="scope.row.recommend_icon ? scope.row.recommend_icon.startsWith('https') : scope.row.recommend_icon"
-              :src="scope.row.recommend_icon" fit="fill" :preview-src-list="[scope.row.recommend_icon]"
-              :preview-teleported="true" :hide-on-click-modal="true" />
+            <el-image v-if="scope.row.ad_images ? scope.row.ad_images.startsWith('https') : scope.row.ad_images"
+              :src="scope.row.ad_images" fit="fill" :preview-src-list="[scope.row.ad_images]" :preview-teleported="true"
+              :hide-on-click-modal="true" />
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center" min-width="220">

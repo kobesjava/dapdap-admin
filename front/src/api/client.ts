@@ -148,7 +148,9 @@ import type {
   Network__GetOneInput,
   Network__GetOneResponseData,
   Ad__GetListInput,
-  Ad__GetListResponseData
+  Ad__GetListResponseData,
+  Ad__DeleteManyInput,
+  Ad__DeleteManyResponseData
 } from "./models";
 
 export const WUNDERGRAPH_S3_ENABLED = true;
@@ -394,6 +396,9 @@ export const operationMetadata: OperationMetadata = {
     requiresAuthentication: false
   },
   "Ad/GetList": {
+    requiresAuthentication: false
+  },
+  "Ad/DeleteMany": {
     requiresAuthentication: false
   }
 };
@@ -828,17 +833,22 @@ export type Mutations = {
   "Network/DeleteMany": {
     input: Netwok__DeleteManyInput;
     data: Netwok__DeleteManyResponseData;
-    requiresAuthentication: true;
+    requiresAuthentication: false;
   };
   "Dapp/DeleteMany": {
     input: Dapp__DeleteManyInput;
     data: Dapp__DeleteManyResponseData;
-    requiresAuthentication: true;
+    requiresAuthentication: false;
   };
   "Dapp/DeleteManyCategory": {
     input: Dapp__DeleteManyInput;
     data: Dapp__DeleteManyResponseData;
-    requiresAuthentication: true;
+    requiresAuthentication: false;
+  };
+  "Ad/DeleteMany": {
+    input: Ad__DeleteManyInput;
+    data: Ad__DeleteManyResponseData;
+    requiresAuthentication: false;
   };
 };
 

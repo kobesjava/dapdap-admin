@@ -192,8 +192,8 @@ async function handleQuery() {
 async function onSubmitUpdate() {
   loading.value = true;
   //const data = getToken();
-  if (File.value) {
-    await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File.value, {
+  if (File) {
+    await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File, {
       headers: {
         "Content-Type": "multipart/form-data",
         //"Authorization": formatToken(data.accessToken),
