@@ -8,7 +8,7 @@ const warpperEnv = (envConf: Recordable): ViteEnv => {
     VITE_CDN: false,
     VITE_HIDE_HOME: "false",
     VITE_COMPRESSION: "none",
-    VITE_ADMIN_HOST: "http://localhost:9991",
+    VITE_ADMIN_HOST: "",
     VITE_S3_URL: "https://s3.amazonaws.com/dapdap.test/"
   };
 

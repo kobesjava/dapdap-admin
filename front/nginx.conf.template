@@ -48,19 +48,19 @@ http {
         }
 
         location /proxy {
-          proxy_pass http://localhost:9991;
+          proxy_pass http://139.162.85.48:9991;
         }
 
          location /operations {
-          proxy_pass http://localhost:9991;
+          proxy_pass http://139.162.85.48:9991;
         }
 
         location /auth {
-          proxy_pass http://localhost:9991;
+          proxy_pass http://139.162.85.48:9991;
         }
 
         location /s3 {
-          proxy_pass http://localhost:9991;
+          proxy_pass http://139.162.85.48:9991;
         }
 
         #error_page  404              /404.html;

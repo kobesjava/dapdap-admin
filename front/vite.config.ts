@@ -61,7 +61,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
         "/s3": {
           target: "http://localhost:9991",
           changeOrigin: true
-        },
+        }
       }
     },
     plugins: getPluginsList(command, VITE_CDN, VITE_COMPRESSION),
