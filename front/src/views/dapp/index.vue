@@ -11,7 +11,7 @@ import WangEditor from "@/components/WangEditor/index.vue";
 import { ElForm, ElMessage, ElMessageBox, ElPagination, ElUpload, ElIcon } from "element-plus";
 import { ref, reactive, onMounted } from "vue";
 import { Icon } from '@iconify/vue';
-import { createOne, createDappCategory, createDappNetwork, getDappLike } from "@/api/dapp";
+import { createOne, createDappCategory, createDappNetwork, getDappLike, getDappByCategory, getDappByNetwork } from "@/api/dapp";
 import axios from 'axios';
 import router from "@/router";
 //import { getUserInfoByName } from "@/api/user";
@@ -29,8 +29,8 @@ const ids = ref<number[]>([]);
 const total = ref(0);
 const imageUrl = ref('');
 const fileList = ref([]);
-const currentSearchCategory = ref("类别");
-const currentSearchNetwork = ref("链");
+const currentSearchCategory = ref("Dapp类别");
+const currentSearchNetwork = ref("Dapp链");
 const queryParams = reactive<PageQuery>({
   pageNum: 1,
   pageSize: 20
@@ -148,8 +148,8 @@ function resetQuery() {
   handleQuery();
   searchFormData.id = "";
   searchFormData.name = "";
-  currentSearchCategory.value = "类别";
-  currentSearchNetwork.value = "链";
+  currentSearchCategory.value = "Dapp类别";
+  currentSearchNetwork.value = "Dapp链";
 }
 
 /**
@@ -159,27 +159,24 @@ function handleSelectionChange(selection: any) {
   ids.value = selection.map((item: any) => item.id);
 }
 
-async function initCategoryData() {
-  const { error, data } = await api.query({
-    operationName: "Dapp/GetCategoryList",
-  });
-  if (!error) {
-    categorySource.value = data?.data
-  }
+function searchByCategory(cate) {
+  currentSearchNetwork.value = "Dapp链"
+  currentSearchCategory.value = cate.name;
+  getDappByCategory(cate.id).then(res => {
+    setDataSource(res.data.data.data)
+  }).catch(error => {
+    ElMessage.error("查询失败");
+  })
 }
 
-async function initNetworkData() {
-  const params = reactive<PageQuery>({
-    pageNum: 1,
-    pageSize: 1000
-  });
-  const { error, data } = await api.query({
-    operationName: "Network/GetList",
-    input: convertPageQuery(params, null)
-  });
-  if (!error) {
-    networkSource.value = data?.data
-  }
+function searchByNetwork(network) {
+  currentSearchCategory.value = "Dapp类别"
+  currentSearchNetwork.value = network.name;
+  getDappByNetwork(network.id).then(res => {
+    setDataSource(res.data.data.data)
+  }).catch(error => {
+    ElMessage.error("查询失败");
+  })
 }
 
 /**
@@ -330,21 +327,11 @@ function beforeImageUpload(rawFile) {
   return true;
 }
 function handleImageSuccess(res, file) {
-  console.log("handleImageSuccess: " + file.value)
   imageUrl.value = URL.createObjectURL(file.raw!)
 }
 function changeImage(file) {
-  console.log("changeImage: " + file.value)
   File = file;
   imageUrl.value = URL.createObjectURL(file.raw!)
-}
-
-function searchByCategory(cate) {
-  currentSearchCategory.value = cate.name;
-}
-
-function searchByNetwork(network) {
-  currentSearchNetwork.value = network.name;
 }
 
 /**
@@ -357,6 +344,29 @@ function updateDapp(post) {
       id: post.id
     }
   })
+}
+
+async function initCategoryData() {
+  const { error, data } = await api.query({
+    operationName: "Dapp/GetCategoryList",
+  });
+  if (!error) {
+    categorySource.value = data?.data
+  }
+}
+
+async function initNetworkData() {
+  const params = reactive<PageQuery>({
+    pageNum: 1,
+    pageSize: 1000
+  });
+  const { error, data } = await api.query({
+    operationName: "Network/GetList",
+    input: convertPageQuery(params, null)
+  });
+  if (!error) {
+    networkSource.value = data?.data
+  }
 }
 
 onMounted(() => {
@@ -376,6 +386,16 @@ onMounted(() => {
         </el-form-item>
         <el-form-item label="名称: " prop="name">
           <el-input v-model="searchFormData.name" placeholder="名称" clearable @keyup.enter="handleQuery" />
+        </el-form-item>
+        <el-form-item>
+          <!-- <Auth value="post:query"> -->
+          <el-button type="primary" @click="handleQuery()">
+            <Icon icon="ep:search" />搜索
+          </el-button>
+          <!-- </Auth> -->
+          <el-button @click="resetQuery()">
+            <Icon icon="ep:refresh" />重置
+          </el-button>
         </el-form-item>
         <el-form-item>
           <el-dropdown trigger="click" @command="searchByCategory">
@@ -402,16 +422,6 @@ onMounted(() => {
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-        </el-form-item>
-        <el-form-item>
-          <!-- <Auth value="post:query"> -->
-          <el-button type="primary" @click="handleQuery()">
-            <Icon icon="ep:search" />搜索
-          </el-button>
-          <!-- </Auth> -->
-          <el-button @click="resetQuery()">
-            <Icon icon="ep:refresh" />重置
-          </el-button>
         </el-form-item>
       </el-form>
     </div>

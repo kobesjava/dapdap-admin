@@ -1,0 +1,39 @@
+query MyQuery($dapp_id: Int! @internal, $network_id: Int @internal, $category_id: Int @internal, $name: String) {
+  data: dapdap_findManydapp(
+    where: {name: {contains: $name,endsWith: ""}}
+    orderBy: {updated_at: asc}
+  ) {
+    id @export(as: "dapp_id")
+    name
+    description
+    native_token
+    favorite
+    recommend
+    recommend_icon
+    created_at
+    network: _join {
+      data: dapdap_findManydapp_network(where: {dapp_id: {equals: $dapp_id}}) {
+        id
+        dapp_id
+        network_id @export(as: "network_id")
+        network_name: _join {
+          data: dapdap_findUniquenetwork(where: {id: $network_id}) {
+            name
+          }
+        }
+      }
+    }
+    category: _join {
+      data: dapdap_findManydapp_category(where: {dapp_id: {equals: $dapp_id}}) {
+        id
+        dapp_id
+        category_id @export(as: "category_id")
+        category_name: _join {
+          data: dapdap_findUniquecategory(where: {id: $category_id}) {
+            name
+          }
+        }
+      }
+    }
+  }
+}

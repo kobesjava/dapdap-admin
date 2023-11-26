@@ -162,3 +162,22 @@ export const getDappLike = (data: object) => {
     params: data
   });
 };
+
+export const getDappByCategory = (categoryId: number) => {
+  return axios.get<any>(
+    VITE_ADMIN_HOST + "/operations/Dapp/GetListByCategory",
+    {
+      params: {
+        cate_id: categoryId
+      }
+    }
+  );
+};
+
+export const getDappByNetwork = (networkId: number) => {
+  return axios.get<any>(VITE_ADMIN_HOST + "/operations/Dapp/GetListByNetwork", {
+    params: {
+      net_id: networkId
+    }
+  });
+};
