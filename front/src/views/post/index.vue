@@ -402,7 +402,7 @@ onMounted(() => {
         <el-table-column label="作者" prop="author" width="200" ellipsis align="center" />
         <el-table-column label="文章类型" prop="case_category.name" width="200" ellipsis align="center" />
         <el-table-column label="发布时间" prop="published_at" align="center" :formatter="(row, col, v) => (v ? new Date(v).toLocaleDateString() : '')
-          " width="300" />
+        " width="300" />
         <el-table-column fixed="right" label="操作" align="center" min-width="220">
           <template #default="scope">
             <!-- <Auth value="post:edit"> -->

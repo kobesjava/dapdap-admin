@@ -153,3 +153,12 @@ export const updateDapp = (
     }
   });
 };
+
+/**
+ * 模糊查询
+ */
+export const getDappLike = (data: object) => {
+  return axios.get<any>(VITE_ADMIN_HOST + "/operations/Dapp/GetLikeList", {
+    params: data
+  });
+};

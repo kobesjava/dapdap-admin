@@ -11,7 +11,7 @@ import WangEditor from "@/components/WangEditor/index.vue";
 import { ElForm, ElMessage, ElMessageBox, ElPagination, ElUpload, ElIcon } from "element-plus";
 import { ref, reactive, onMounted } from "vue";
 import { Icon } from '@iconify/vue';
-import { createOne, createDappCategory, createDappNetwork } from "@/api/dapp";
+import { createOne, createDappCategory, createDappNetwork, getDappLike } from "@/api/dapp";
 import axios from 'axios';
 import router from "@/router";
 //import { getUserInfoByName } from "@/api/user";
@@ -21,6 +21,7 @@ const { VITE_ADMIN_HOST, VITE_S3_URL } = import.meta.env;
 
 
 const store = useUserStoreHook();
+const queryFormRef = ref(ElForm);
 const dataFormRef = ref(ElForm);
 const hackReset = ref(false)
 const loading = ref(false);
@@ -28,11 +29,16 @@ const ids = ref<number[]>([]);
 const total = ref(0);
 const imageUrl = ref('');
 const fileList = ref([]);
+const currentSearchCategory = ref("类别");
+const currentSearchNetwork = ref("链");
 const queryParams = reactive<PageQuery>({
   pageNum: 1,
   pageSize: 20
 });
-
+const searchFormData = reactive({
+  name: "",
+  id: "",
+})
 const dataSource = ref([]);
 const categorySource = ref([]);
 const networkSource = ref([]);
@@ -62,55 +68,88 @@ const rules = ref({
 });
 
 /**
+ * 搜索
+ */
+async function handleSearch() {
+  if (searchFormData.id) {
+    const { error, data } = await api.query({
+      operationName: "Dapp/GetOne",
+      input: { id: Number(searchFormData.id) }
+    });
+    if (!error) {
+      setDataSource([data.data])
+    }
+  } else if (searchFormData.name) {
+    await getDappLike(searchFormData).then(res => {
+      setDataSource(res.data.data.data)
+    }).catch(error => {
+      ElMessage.error("查询失败");
+    })
+  }
+}
+
+/**
  * 查询
  */
 async function handleQuery() {
   loading.value = true;
-  const { error, data } = await api.query({
-    operationName: "Dapp/GetList",
-    input: convertPageQuery(queryParams, null)
-  });
-  if (!error) {
-    dataSource.value = data!.data!;
-    if (dataSource.value.length > 0) {
-      for (let dapp of dataSource.value) {
-        let categoryContent = ""
-        let networkContent = ""
-        if (dapp.category.data.length > 0) {
-          for (let category of dapp.category.data) {
-            categoryContent += category.category_name.data.name + ","
-          }
-        }
-        if (dapp.network.data.length > 0) {
-          for (let network of dapp.network.data) {
-            networkContent += network.network_name.data.name + ","
-          }
-        }
-        if (categoryContent.length > 0) {
-          categoryContent = categoryContent.substring(0, categoryContent.length - 1)
-        }
-        if (networkContent.length > 0) {
-          networkContent = networkContent.substring(0, networkContent.length - 1)
-        }
-        dapp.categoryContent = categoryContent
-        dapp.networkContent = networkContent
-        if (dapp.recommend_icon.length > 0 && !dapp.recommend_icon.startsWith("http")) {
-          dapp.recommend_icon = VITE_S3_URL + dapp.recommend_icon
-        }
-      }
+  if (searchFormData.id || searchFormData.name) {
+    handleSearch()
+  } else {
+    const { error, data } = await api.query({
+      operationName: "Dapp/GetList",
+      input: convertPageQuery(queryParams, null)
+    });
+    if (!error) {
+      setDataSource(data!.data!)
+      total.value = data!.total!;
     }
-    total.value = data!.total!;
-    loading.value = false;
   }
   loading.value = false;
+}
+
+function setDataSource(data) {
+  if (data.length > 0) {
+    for (let dapp of data) {
+      let categoryContent = ""
+      let networkContent = ""
+      if (dapp.category.data.length > 0) {
+        for (let category of dapp.category.data) {
+          categoryContent += category.category_name.data.name + ","
+        }
+      }
+      if (dapp.network.data.length > 0) {
+        for (let network of dapp.network.data) {
+          networkContent += network.network_name.data.name + ","
+        }
+      }
+      if (categoryContent.length > 0) {
+        categoryContent = categoryContent.substring(0, categoryContent.length - 1)
+      }
+      if (networkContent.length > 0) {
+        networkContent = networkContent.substring(0, networkContent.length - 1)
+      }
+      dapp.categoryContent = categoryContent
+      dapp.networkContent = networkContent
+      if (dapp.recommend_icon.length > 0 && !dapp.recommend_icon.startsWith("http")) {
+        dapp.recommend_icon = VITE_S3_URL + dapp.recommend_icon
+      }
+    }
+  }
+  dataSource.value = data
 }
 
 /**
  * 重置查询
  */
 function resetQuery() {
+  queryFormRef.value.resetFields();
   queryParams.pageNum = 1;
   handleQuery();
+  searchFormData.id = "";
+  searchFormData.name = "";
+  currentSearchCategory.value = "类别";
+  currentSearchNetwork.value = "链";
 }
 
 /**
@@ -152,8 +191,12 @@ async function openDialog() {
   // await getUserInfoByName(equals).then(res => {
   //   formData.userId = res.data.data.data[0].id;
   // })
-  await initCategoryData()
-  await initNetworkData()
+  if (categorySource.value.length == 0) {
+    await initCategoryData()
+  }
+  if (networkSource.value.length == 0) {
+    await initNetworkData()
+  }
   hackReset.value = true;
   dialog.visible = true;
   dialog.title = "新增Dapp";
@@ -296,6 +339,14 @@ function changeImage(file) {
   imageUrl.value = URL.createObjectURL(file.raw!)
 }
 
+function searchByCategory(cate) {
+  currentSearchCategory.value = cate.name;
+}
+
+function searchByNetwork(network) {
+  currentSearchNetwork.value = network.name;
+}
+
 /**
  * 编辑
  */
@@ -309,6 +360,8 @@ function updateDapp(post) {
 }
 
 onMounted(() => {
+  initCategoryData()
+  initNetworkData()
   handleQuery();
 });
 
@@ -316,6 +369,52 @@ onMounted(() => {
 
 <template>
   <div class="app-container">
+    <div class="search">
+      <el-form ref="queryFormRef" :model="searchFormData" :inline="true">
+        <el-form-item label="Id: " prop="id">
+          <el-input v-model="searchFormData.id" placeholder="id" clearable @keyup.enter="handleQuery" />
+        </el-form-item>
+        <el-form-item label="名称: " prop="name">
+          <el-input v-model="searchFormData.name" placeholder="名称" clearable @keyup.enter="handleQuery" />
+        </el-form-item>
+        <el-form-item>
+          <el-dropdown trigger="click" @command="searchByCategory">
+            <el-button type="primary">
+              {{ currentSearchCategory }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item v-for="cate in categorySource" :command="cate">{{
+                  cate.name }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </el-form-item>
+        <el-form-item>
+          <el-dropdown trigger="click" @command="searchByNetwork">
+            <el-button type="primary">
+              {{ currentSearchNetwork }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item v-for="network in networkSource" :command="network">{{
+                  network.name }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </el-form-item>
+        <el-form-item>
+          <!-- <Auth value="post:query"> -->
+          <el-button type="primary" @click="handleQuery()">
+            <Icon icon="ep:search" />搜索
+          </el-button>
+          <!-- </Auth> -->
+          <el-button @click="resetQuery()">
+            <Icon icon="ep:refresh" />重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </div>
 
     <el-card shadow="never">
       <template #header>

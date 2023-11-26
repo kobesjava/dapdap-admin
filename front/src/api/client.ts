@@ -405,6 +405,9 @@ export const operationMetadata: OperationMetadata = {
   },
   "Ad/GetOne": {
     requiresAuthentication: false
+  },
+  "Dapp/GetLikeList": {
+    requiresAuthentication: false
   }
 };
 
@@ -680,6 +683,11 @@ export type Queries = {
   "Ad/GetOne": {
     input: Ad__GetOneInput;
     data: Ad__GetOneResponseData;
+    requiresAuthentication: false;
+  };
+  "Dapp/GetLikeList": {
+    input: Dapp__GetListInput;
+    data: Dapp__GetListResponseData;
     requiresAuthentication: false;
   };
 };

@@ -1,15 +1,23 @@
 {
-  "enabled": true,
+  "enabled": false,
   "title": "",
   "remark": "",
   "createTime": "2023-11-24T15:35:25.196229+08:00",
-  "updateTime": "",
+  "updateTime": "2023-11-26T13:43:06.635662+08:00",
   "deleteTime": "",
   "path": "admin_apilog/CreateOneadmin_apilog",
   "engine": 0,
   "hooksConfiguration": null,
   "configCustomized": false,
-  "cacheConfig": null,
-  "liveQueryConfig": null,
+  "cacheConfig": {
+    "enabled": false,
+    "maxAge": 120,
+    "public": false,
+    "staleWhileRevalidate": 30
+  },
+  "liveQueryConfig": {
+    "enabled": false,
+    "pollingIntervalSeconds": 10
+  },
   "authenticationConfig": null
 }
