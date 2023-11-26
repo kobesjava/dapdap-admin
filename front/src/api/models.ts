@@ -1966,6 +1966,18 @@ export interface Dapp__GetOneResponseData {
         };
       }[];
     };
+    relate?: {
+      data: {
+        id: number;
+        dapp_id: number;
+        dapp_id_relate: number;
+        dapp_name_relate: {
+          data: {
+            name: string;
+          };
+        };
+      }[];
+    };
   };
 }
 

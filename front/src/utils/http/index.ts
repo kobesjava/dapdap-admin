@@ -5,17 +5,16 @@ import {
   InternalAxiosRequestConfig
 } from "axios";
 import { stringify } from "qs";
-import { getToken, formatToken, setToken } from "@/utils/auth";
+import { getToken, formatToken } from "@/utils/auth";
 import axios from "axios";
 import { ElMessage } from "element-plus";
 import { useUserStoreHook } from "@/store/modules/user";
-import router from "@/router";
 import { storageSession } from "@pureadmin/utils";
 const whiteList = ["/login", "/operations/Casdoor/RefreshToken"];
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const instance = axios.create({
   // 请求超时时间
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     Accept: "application/json, text/plain, */*",
     "Content-Type": "application/json",
@@ -48,19 +47,22 @@ instance.interceptors.request.use(
     const data = getToken();
     if (data) {
       const now = new Date().getTime();
-      const expired = ((parseInt(data.expires)) - (now / 1000) <= 0); // 是否过期
+      const expired = parseInt(data.expires) - now / 1000 <= 0; // 是否过期
       if (expired) {
         // token过期刷新
         // 获取refreshToken的值
-        const refreshToken = storageSession().getItem("user-info")['refreshToken'];
-        useUserStoreHook().handRefreshToken({ refreshToken })
+        const refreshToken =
+          storageSession().getItem("user-info")["refreshToken"];
+        useUserStoreHook()
+          .handRefreshToken({ refreshToken })
           .then(res => {
             const token = res.data.data.data.data.accessToken;
             config.headers["Authorization"] = formatToken(token);
-          }).catch(err => {
+          })
+          .catch(err => {
             // refreshToken已失效，跳转登录界面
             useUserStoreHook().logOut();
-          })
+          });
       } else {
         config.headers["Authorization"] = formatToken(data.accessToken);
       }

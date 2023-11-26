@@ -1,6 +1,7 @@
-query MyQuery($cate_id: Int!,$dapp_id: Int! @internal, $network_id: Int @internal,$category_id: Int @internal) {
+query MyQuery($cate_id: Int!,$dapp_id: Int! @internal, $network_id: Int @internal,$category_id: Int @internal,$dapp_id_relate: Int @internal) {
   data: dapdap_findManydapp(
     where: {dapp_category: {some: {category_id: {equals: $cate_id}}}}
+    orderBy:{updated_at:desc}
   ) {
     id @export(as: "dapp_id")
     name
@@ -29,6 +30,18 @@ query MyQuery($cate_id: Int!,$dapp_id: Int! @internal, $network_id: Int @interna
         category_id @export(as: "category_id")
         category_name: _join {
           data: dapdap_findUniquecategory(where: {id:$category_id}){
+          	name
+        	}
+      	}
+    	}
+    }
+    relate: _join {
+      data: dapdap_findManydapp_relate(where: {dapp_id: {equals: $dapp_id}}) {
+        id
+        dapp_id
+        dapp_id_relate @export(as: "dapp_id_relate")
+        dapp_name_relate: _join {
+          data: dapdap_findUniquedapp(where: {id:$dapp_id_relate}){
           	name
         	}
       	}

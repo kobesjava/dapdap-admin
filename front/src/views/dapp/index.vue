@@ -11,7 +11,7 @@ import WangEditor from "@/components/WangEditor/index.vue";
 import { ElForm, ElMessage, ElMessageBox, ElPagination, ElUpload, ElIcon } from "element-plus";
 import { ref, reactive, onMounted } from "vue";
 import { Icon } from '@iconify/vue';
-import { createOne, createDappCategory, createDappNetwork, getDappLike, getDappByCategory, getDappByNetwork } from "@/api/dapp";
+import { createOne, createDappCategory, createDappNetwork, createDappRelate, getDappLike, getDappByCategory, getDappByNetwork } from "@/api/dapp";
 import axios from 'axios';
 import router from "@/router";
 //import { getUserInfoByName } from "@/api/user";
@@ -54,6 +54,7 @@ const formData = reactive({
   native_token: "",
   recommend: "",
   recommend_icon: "",
+  dapp_relate_ids: "",
   category: [],
   network: [],
 });
@@ -65,6 +66,7 @@ const rules = ref({
   native_token: [{ required: false, message: "请输入NativeToken", trigger: "blur" }],
   recommend: [{ required: false, message: "请选择是否推荐展示", trigger: "blur" }],
   recommend_icon: [{ required: false, message: "请选择推荐展示图片", trigger: "blur" }],
+  dapp_relate_ids: [{ required: false, message: "请输入关联Dapp Id,逗号(,)分隔", trigger: "blur" }],
 });
 
 /**
@@ -113,6 +115,7 @@ function setDataSource(data) {
     for (let dapp of data) {
       let categoryContent = ""
       let networkContent = ""
+      let relateContent = ""
       if (dapp.category.data.length > 0) {
         for (let category of dapp.category.data) {
           categoryContent += category.category_name.data.name + ","
@@ -123,14 +126,23 @@ function setDataSource(data) {
           networkContent += network.network_name.data.name + ","
         }
       }
+      if (dapp.relate.data.length > 0) {
+        for (let relate of dapp.relate.data) {
+          relateContent += relate.dapp_name_relate.data.name + ","
+        }
+      }
       if (categoryContent.length > 0) {
         categoryContent = categoryContent.substring(0, categoryContent.length - 1)
       }
       if (networkContent.length > 0) {
         networkContent = networkContent.substring(0, networkContent.length - 1)
       }
+      if (relateContent.length > 0) {
+        relateContent = relateContent.substring(0, relateContent.length - 1)
+      }
       dapp.categoryContent = categoryContent
       dapp.networkContent = networkContent
+      dapp.relateContent = relateContent
       if (dapp.recommend_icon.length > 0 && !dapp.recommend_icon.startsWith("http")) {
         dapp.recommend_icon = VITE_S3_URL + dapp.recommend_icon
       }
@@ -204,7 +216,6 @@ async function openDialog() {
  */
 async function handleSubmit() {
   loading.value = true;
-  //const data = getToken();
   if (formData.category.length == 0) {
     ElMessage.warning("请选择类别");
     return
@@ -215,6 +226,18 @@ async function handleSubmit() {
   }
   dataFormRef.value.validate(async (isValid: boolean) => {
     if (isValid) {
+      const dappRelateIds: number[] = []
+      if (formData.dapp_relate_ids) {
+        const relateIds = formData.dapp_relate_ids.split(',')
+        for (let relateId of relateIds) {
+          if (isNaN(parseInt(relateId)) || !isFinite(parseInt(relateId))) {
+            ElMessage.warning("关联Dapp Id, 输入错误");
+            return
+          }
+          dappRelateIds.push(parseInt(relateId))
+        }
+      }
+
       if (File) {
         //const username = useUserStoreHook().username;
         const data = getToken();
@@ -250,13 +273,19 @@ async function handleSubmit() {
               ElMessage.success("新增关联链失败");
             }
           })
+          if (dappRelateIds.length > 0) {
+            createDappRelate(Number(res.data.data.data.id), dappRelateIds).then(res => {
+              if (!res.data.data) {
+                ElMessage.success("新增关联Dapp失败");
+              }
+            })
+          }
           ElMessage.success("新增成功");
           closeDialog();
           handleQuery();
         } else {
           ElMessage.error("新增失败");
         }
-        loading.value = false;
       });
     }
   });
@@ -283,6 +312,7 @@ function resetForm() {
   formData.native_token = "";
   formData.recommend = "";
   formData.recommend_icon = "";
+  formData.dapp_relate_ids = "";
   formData.category = [];
   formData.network = [];
 }
@@ -448,6 +478,7 @@ onMounted(() => {
         <el-table-column label="名称" prop="name" width="200" align="center" ellipsis />
         <el-table-column label="类别" prop="categoryContent" width="150" align="center" ellipsis />
         <el-table-column label="链" prop="networkContent" width="150" align="center" ellipsis />
+        <el-table-column label="关联Dapp" prop="relateContent" width="150" align="center" ellipsis />
         <el-table-column label="描述" prop="description" width="150" align="center" ellipsis />
         <el-table-column label="NativeToken" prop="native_token" width="120" align="center" ellipsis />
         <el-table-column label="推荐展示" prop="recommend" width="100" align="center" ellipsis />
@@ -488,6 +519,9 @@ onMounted(() => {
           <el-checkbox-group v-model="formData.network">
             <el-checkbox v-for="network in networkSource" :label="network.id">{{ network.name }}</el-checkbox>
           </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="关联Dapp" prop="description">
+          <el-input v-model="formData.dapp_relate_ids" placeholder="请输入关联Dapp Id,逗号(,)分隔" />
         </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input type="textarea" :rows="5" v-model="formData.description" placeholder="请输入描述" />

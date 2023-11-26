@@ -1,0 +1,5 @@
+mutation CreateManyDappRelate($param:[dapdap_dapp_relateCreateManyInput]!) {
+  data: dapdap_createManydapp_relate(data: $param){
+    count
+  }
+}

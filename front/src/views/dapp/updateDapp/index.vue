@@ -18,6 +18,9 @@
             <el-checkbox v-for="network in networkSource" :label="network.id">{{ network.name }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
+        <el-form-item label="关联Dapp" prop="description">
+          <el-input v-model="formData.dapp_relate_ids" placeholder="请输入关联Dapp Id,逗号(,)分隔" />
+        </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input type="textarea" :rows="5" v-model="formData.description" placeholder="请输入描述" />
         </el-form-item>
@@ -81,6 +84,7 @@ const rules = ref({
   native_token: [{ required: false, message: "请输入NativeToken", trigger: "blur" }],
   recommend: [{ required: false, message: "请选择是否推荐展示", trigger: "blur" }],
   recommend_icon: [{ required: false, message: "请选择推荐展示图片", trigger: "blur" }],
+  dapp_relate_ids: [{ required: false, message: "请输入关联Dapp Id,逗号(,)分隔", trigger: "blur" }],
 });
 const loading = ref(false);
 const route = useRoute();
@@ -92,6 +96,7 @@ const categorySource = ref([]);
 const networkSource = ref([]);
 const currentNetwork = ref<{ id: number, networkId: number }[]>([]);
 const currentCategory = ref<{ id: number, categoryId: number }[]>([]);
+const currentRelate = ref<{ id: number, relateId: number }[]>([]);
 const formData = reactive({
   id: 0,
   name: "",
@@ -99,6 +104,7 @@ const formData = reactive({
   native_token: "",
   recommend: 0,
   recommend_icon: "",
+  dapp_relate_ids: "",
   category: [],
   network: [],
 })
@@ -180,6 +186,18 @@ async function handleQuery() {
         formData.network.push(network.network_id)
       }
     }
+    if (data.data.relate.data.length > 0) {
+      for (let relate of data.data.relate.data) {
+        currentRelate.value.push({
+          id: relate.id,
+          relateId: relate.dapp_id_relate,
+        })
+        formData.dapp_relate_ids += relate.dapp_id_relate + ","
+      }
+      if (formData.dapp_relate_ids.length > 0) {
+        formData.dapp_relate_ids = formData.dapp_relate_ids.substring(0, formData.dapp_relate_ids.length - 1)
+      }
+    }
   }
   await initCategoryData()
   await initNetworkData()
@@ -205,7 +223,18 @@ async function onSubmitUpdate() {
   }
   dataFormRef.value.validate(async (isValid: boolean) => {
     if (isValid) {
-      await updateDapp(formData.id, formData.name, currentNetwork.value, currentCategory.value, formData.network, formData.category, formData.description, formData.native_token, formData.recommend, formData.recommend_icon).then(res => {
+      const dappRelateIds: number[] = []
+      if (formData.dapp_relate_ids) {
+        const relateIds = formData.dapp_relate_ids.split(',')
+        for (let relateId of relateIds) {
+          if (isNaN(parseInt(relateId)) || !isFinite(parseInt(relateId))) {
+            ElMessage.warning("关联Dapp Id, 输入错误");
+            return
+          }
+          dappRelateIds.push(parseInt(relateId))
+        }
+      }
+      await updateDapp(formData.id, formData.name, currentNetwork.value, currentCategory.value, currentRelate.value, formData.network, formData.category, dappRelateIds, formData.description, formData.native_token, formData.recommend, formData.recommend_icon).then(res => {
         ElMessage.success("修改成功");
         close();
       }).catch(error => {

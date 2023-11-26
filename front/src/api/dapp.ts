@@ -73,19 +73,45 @@ export const createDappNetwork = (dapp_id: number, networkIds: number[]) => {
   );
 };
 
+// 新增dapp_relate
+export const createDappRelate = (dapp_id: number, relateIds: number[]) => {
+  const params: {
+    dapp_id: number;
+    dapp_id_relate: number;
+  }[] = [];
+  for (const relateId of relateIds) {
+    params.push({
+      dapp_id: dapp_id,
+      dapp_id_relate: relateId
+    });
+  }
+  return axios.post<any>(
+    VITE_ADMIN_HOST + `/operations/Dapp/CreateManyDappRelate`,
+    {
+      data: {
+        param: params
+      }
+    }
+  );
+};
+
 // 更新dapp
 export const updateDapp = (
   id: number,
   name: string,
   oldNetworks: { id: number; networkId: number }[],
   oldCategorys: { id: number; categoryId: number }[],
+  oldRelates: { id: number; relateId: number }[],
   networkIds: number[],
   categoryIds: number[],
+  relateIds: number[],
   description?: string,
   native_token?: string,
   recommend?: number,
   recommend_icon?: string
 ) => {
+  console.log("timeout: " + axios.defaults.timeout);
+
   const networkParams: {
     dapp_id: number;
     network_id: number;
@@ -104,7 +130,6 @@ export const updateDapp = (
       });
     }
   }
-
   const deleteNetworkParams: number[] = [];
   for (const oldNetwork of oldNetworks) {
     if (!networkIds.includes(oldNetwork.networkId)) {
@@ -130,7 +155,6 @@ export const updateDapp = (
       });
     }
   }
-
   const deleteCategoryParams: number[] = [];
   for (const oldCategory of oldCategorys) {
     if (!categoryIds.includes(oldCategory.categoryId)) {
@@ -138,20 +162,53 @@ export const updateDapp = (
     }
   }
 
-  return axios.post<any>(VITE_ADMIN_HOST + `/operations/Dapp/UpdateOne`, {
-    data: {
-      id: id,
-      name: name,
-      deleteNetworks: deleteNetworkParams,
-      deleteCategorys: deleteCategoryParams,
-      networks: networkParams,
-      categorys: categoryParams,
-      description: description,
-      native_token: native_token,
-      recommend: recommend == 1 ? true : false,
-      recommend_icon: recommend_icon
+  const relateParams: {
+    dapp_id: number;
+    dapp_id_relate: number;
+  }[] = [];
+  for (const relateId of relateIds) {
+    let exist = false;
+    for (const oldRelate of oldRelates) {
+      if (oldRelate.relateId == relateId) {
+        exist = true;
+      }
     }
-  });
+    if (!exist) {
+      relateParams.push({
+        dapp_id: id,
+        dapp_id_relate: relateId
+      });
+    }
+  }
+  const deleteRelateParams: number[] = [];
+  for (const oldRelate of oldRelates) {
+    if (!relateIds.includes(oldRelate.relateId)) {
+      deleteRelateParams.push(oldRelate.id);
+    }
+  }
+
+  return axios.post<any>(
+    VITE_ADMIN_HOST + `/operations/Dapp/UpdateOne`,
+    {
+      data: {
+        id: id,
+        name: name,
+        deleteNetworks: deleteNetworkParams,
+        deleteCategorys: deleteCategoryParams,
+        deleteRelates: deleteRelateParams,
+        networks: networkParams,
+        categorys: categoryParams,
+        relates: relateParams,
+        description: description ? description : "",
+        native_token: native_token ? native_token : "",
+        recommend: recommend == 1 ? true : false,
+        recommend_icon: recommend_icon
+      }
+    },
+    {
+      timeout: 30000
+    }
+  );
 };
 
 /**
