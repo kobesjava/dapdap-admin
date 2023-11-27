@@ -14,6 +14,7 @@ backend/custom-go/custom-go
 backend/template/
 backend/store/datasource/main.json
 backend/store/datasource/dapdap.json
+backend/store/storage
 casdoor_service
 front/.env.development
 front/.env.production
