@@ -27,7 +27,7 @@ const loading = ref(false);
 const ids = ref<number[]>([]);
 const total = ref(0);
 const fileList = ref<UploadUserFile[]>([])
-const Files = [];
+const Files = new Map<string, UploadUserFile>()
 const queryParams = reactive<PageQuery>({
   pageNum: 1,
   pageSize: 20
@@ -122,25 +122,27 @@ async function handleSubmit() {
   loading.value = true;
   dataFormRef.value.validate(async (isValid: boolean) => {
     if (isValid) {
+      if (fileList.value.length == 0) {
+        ElMessage.warning("请选择广告图片");
+        return
+      }
       //const username = useUserStoreHook().username;
       const data = getToken();
-      let uploadSuccess = false
-      await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=public", Files, {
+      const uploadFiles = []
+      for (let file of fileList.value) {
+        uploadFiles.push(Files[file.url])
+      }
+      await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=public", uploadFiles, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": formatToken(data.accessToken),
         }
       }).then(res => {
-        let imageKeys = ""
+        formData.ad_images = ""
         for (let fileData of res.data) {
-          imageKeys += fileData.key + ","
+          formData.ad_images += fileData.key + ","
         }
-        formData.ad_images = imageKeys.substring(0, imageKeys.length - 1)
-        uploadSuccess = true
-      }).catch(err => {
-        ElMessage.error(err)
-      })
-      if (uploadSuccess) {
+        formData.ad_images = formData.ad_images.substring(0, formData.ad_images.length - 1)
         createOne(formData.category, formData.category_id, formData.ad_link, formData.ad_images).then(res => {
           if (res.data.data.data) {
             ElMessage.success("新增成功");
@@ -150,9 +152,9 @@ async function handleSubmit() {
             ElMessage.error("新增失败");
           }
         });
-      } else {
-        loading.value = false;
-      }
+      }).catch(err => {
+        ElMessage.error(err)
+      })
     }
   });
   loading.value = false;
@@ -173,7 +175,7 @@ function closeDialog() {
 function resetForm() {
   dataFormRef.value.resetFields();
   dataFormRef.value.clearValidate();
-  Files.length = 0
+  Files.clear()
   formData.category = null;
   formData.category_id = null;
   formData.ad_link = "";
@@ -229,7 +231,7 @@ function changeImage(file) {
     name: file.name,
     url: fileUrl,
   })
-  Files.push(file)
+  Files[fileUrl] = file
 }
 
 /**
@@ -276,8 +278,9 @@ onMounted(() => {
         <el-table-column label="广告链接" prop="ad_link" width="400" align="center" ellipsis />
         <el-table-column label="广告图片" width="400" align="center">
           <template #default="scope">
-            <el-image v-for="adImageUrl in scope.row.ad_images.split(',')" :key="adImageUrl" :src="adImageUrl" fit="fill"
-              :preview-teleported="true" :hide-on-click-modal="true" lazy />
+            <el-image v-if="scope.row.ad_images.length > 0" v-for="adImageUrl in scope.row.ad_images.split(',')"
+              :key="adImageUrl" :src="adImageUrl" fit="fill" :preview-teleported="true" :hide-on-click-modal="true"
+              lazy />
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center" min-width="100">
@@ -307,7 +310,7 @@ onMounted(() => {
         <el-form-item label="广告链接" prop="ad_link">
           <el-input v-model="formData.ad_link" placeholder="请输入广告连接" />
         </el-form-item>
-        <el-form-item label="广告图片" prop="ad_images">
+        <el-form-item label="广告图片" prop="fileList">
           <el-upload v-model:file-list="fileList" class="upload-demo" action="#" :before-upload="beforeImageUpload"
             accept="image/jpg,image/jpeg,image/png" :on-change="changeImage" list-type="picture">
             <el-button type="primary">Click to upload</el-button>

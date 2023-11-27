@@ -17,17 +17,6 @@
         <el-form-item label="广告链接" prop="ad_link">
           <el-input v-model="formData.ad_link" placeholder="请输入广告连接" />
         </el-form-item>
-        <!-- <el-form-item label="广告图片" prop="ad_images">
-          <el-upload class="avatar-uploader" action="#" :show-file-list="false" accept="image/jpg,image/jpeg,image/png"
-            :on-success="handleImageSuccess" :before-upload="beforeImageUpload" :on-change="changeImage"
-            :auto-upload="false" :file-list="fileList">
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" title="点击重新上传" />
-            <el-icon v-else class="avatar-uploader-icon">
-              <plus />
-            </el-icon>
-          </el-upload>
-        </el-form-item> -->
-
         <el-form-item label="广告图片" prop="filesList">
           <el-upload v-model:file-list="fileList" action="#" accept="image/jpg,image/jpeg,image/png"
             :before-upload="beforeImageUpload" :on-change="changeImage" list-type="picture">
@@ -75,7 +64,7 @@ const route = useRoute();
 const dataFormRef = ref(ElForm);
 const { multiTags } = useTags();
 const fileList = ref<UploadUserFile[]>([])
-const Files = [];
+const Files: { [key: string]: UploadUserFile } = {};
 const currentImages: { [key: string]: string } = {};
 const formData = reactive({
   id: 0,
@@ -107,8 +96,9 @@ function changeImage(file) {
   fileList.value.push({
     name: file.name,
     url: fileUrl,
+    raw: file
   })
-  Files.push(file)
+  Files[fileUrl] = file
 }
 
 async function handleQuery() {
@@ -151,13 +141,17 @@ async function onSubmitUpdate() {
   loading.value = true;
   dataFormRef.value.validate(async (isValid: boolean) => {
     if (isValid) {
+      if (fileList.value.length == 0) {
+        ElMessage.warning("请选择广告图片");
+        return
+      }
       const addFiles = []
       formData.ad_images = ""
       for (let file of fileList.value) {
         if (file.url.startsWith("http")) {
           formData.ad_images += currentImages[file.url] + ","
         } else {
-          addFiles.push(file.raw)
+          addFiles.push(Files[file.url])
         }
       }
       if (addFiles.length > 0) {
