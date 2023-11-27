@@ -8,7 +8,7 @@ export default {
 <script setup lang="ts">
 import api, { convertPageQuery } from "@/api";
 import WangEditor from "@/components/WangEditor/index.vue";
-import { ElForm, ElMessage, ElMessageBox, ElPagination, ElUpload, ElIcon } from "element-plus";
+import { ElForm, ElMessage, ElMessageBox, ElPagination, ElUpload, UploadUserFile } from "element-plus";
 import { ref, reactive, onMounted } from "vue";
 import { Icon } from '@iconify/vue';
 import { createOne } from "@/api/ad";
@@ -26,8 +26,8 @@ const hackReset = ref(false)
 const loading = ref(false);
 const ids = ref<number[]>([]);
 const total = ref(0);
-const imageUrl = ref('');
-const fileList = ref([]);
+const fileList = ref<UploadUserFile[]>([])
+const Files = [];
 const queryParams = reactive<PageQuery>({
   pageNum: 1,
   pageSize: 20
@@ -66,7 +66,16 @@ async function handleQuery() {
     if (data!.data!.length > 0) {
       for (let ad of data!.data!) {
         if (ad.ad_images.length > 0) {
-          ad.ad_images = VITE_S3_URL + ad.ad_images
+          let imagesUrl = ""
+          const adImages = ad.ad_images.split(",")
+          for (let adImageUrl of adImages) {
+            if (adImageUrl.startsWith("http")) {
+              imagesUrl += adImageUrl + ","
+            } else {
+              imagesUrl += VITE_S3_URL + adImageUrl + ","
+            }
+          }
+          ad.ad_images = imagesUrl.substring(0, imagesUrl.length - 1)
         }
       }
     }
@@ -116,13 +125,17 @@ async function handleSubmit() {
       //const username = useUserStoreHook().username;
       const data = getToken();
       let uploadSuccess = false
-      await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File, {
+      await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=public", Files, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": formatToken(data.accessToken),
         }
       }).then(res => {
-        formData.ad_images = res.data[0].key;
+        let imageKeys = ""
+        for (let fileData of res.data) {
+          imageKeys += fileData.key + ","
+        }
+        formData.ad_images = imageKeys.substring(0, imageKeys.length - 1)
         uploadSuccess = true
       }).catch(err => {
         ElMessage.error(err)
@@ -160,6 +173,7 @@ function closeDialog() {
 function resetForm() {
   dataFormRef.value.resetFields();
   dataFormRef.value.clearValidate();
+  Files.length = 0
   formData.category = null;
   formData.category_id = null;
   formData.ad_link = "";
@@ -192,7 +206,6 @@ function handleDelete(id?: number) {
   });
 }
 
-let File = undefined;
 function beforeImageUpload(rawFile) {
   const isIMAGE = rawFile.type === 'image/jpeg' || 'image/jpg' || 'image/png';
   if (!isIMAGE) {
@@ -205,14 +218,18 @@ function beforeImageUpload(rawFile) {
   }
   return true;
 }
-function handleImageSuccess(res, file) {
-  imageUrl.value = URL.createObjectURL(file.raw!)
-  formData.ad_images = imageUrl.value
-}
+// function handleImageSuccess(res, file) {
+//   imageUrl.value = URL.createObjectURL(file.raw!)
+//   formData.ad_images = imageUrl.value
+//   console.log("handleImageSuccess file: " + imageUrl.value)
+// }
 function changeImage(file) {
-  File = file;
-  imageUrl.value = URL.createObjectURL(file.raw!)
-  formData.ad_images = imageUrl.value
+  const fileUrl = URL.createObjectURL(file.raw!)
+  fileList.value.push({
+    name: file.name,
+    url: fileUrl,
+  })
+  Files.push(file)
 }
 
 /**
@@ -256,15 +273,14 @@ onMounted(() => {
         <el-table-column label="ID" prop="id" width="60" align="center" ellipsis />
         <el-table-column label="类别ID" prop="category_id" width="100" align="center" ellipsis />
         <el-table-column label="类别" prop="category" width="100" align="center" ellipsis />
-        <el-table-column label="广告链接" prop="ad_link" width="250" align="center" ellipsis />
-        <el-table-column label="广告图片" width="200" align="center" ellipsis>
+        <el-table-column label="广告链接" prop="ad_link" width="400" align="center" ellipsis />
+        <el-table-column label="广告图片" width="400" align="center">
           <template #default="scope">
-            <el-image v-if="scope.row.ad_images ? scope.row.ad_images.startsWith('https') : scope.row.ad_images"
-              :src="scope.row.ad_images" fit="fill" :preview-src-list="[scope.row.ad_images]" :preview-teleported="true"
-              :hide-on-click-modal="true" />
+            <el-image v-for="adImageUrl in scope.row.ad_images.split(',')" :key="adImageUrl" :src="adImageUrl" fit="fill"
+              :preview-teleported="true" :hide-on-click-modal="true" lazy />
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" align="center" min-width="220">
+        <el-table-column fixed="right" label="操作" align="center" min-width="100">
           <template #default="scope">
             <el-button type="primary" link size="small" @click.stop="updateAd(scope.row)">
               <Icon icon="ep:edit" />编辑
@@ -292,13 +308,14 @@ onMounted(() => {
           <el-input v-model="formData.ad_link" placeholder="请输入广告连接" />
         </el-form-item>
         <el-form-item label="广告图片" prop="ad_images">
-          <el-upload class="avatar-uploader" action="#" :show-file-list="false" accept="image/jpg,image/jpeg,image/png"
-            :on-success="handleImageSuccess" :before-upload="beforeImageUpload" :on-change="changeImage"
-            :file-list="fileList">
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" title="点击重新上传" />
-            <el-icon v-else class="avatar-uploader-icon">
-              <plus />
-            </el-icon>
+          <el-upload v-model:file-list="fileList" class="upload-demo" action="#" :before-upload="beforeImageUpload"
+            accept="image/jpg,image/jpeg,image/png" :on-change="changeImage" list-type="picture">
+            <el-button type="primary">Click to upload</el-button>
+            <template #tip>
+              <div class="el-upload__tip">
+                jpg/png files with a size less than 2M
+              </div>
+            </template>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -334,13 +351,5 @@ onMounted(() => {
 
 .avatar-uploader .el-upload:hover {
   border-color: var(--el-color-primary);
-}
-
-.el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
 }
 </style>

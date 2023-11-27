@@ -17,7 +17,7 @@
         <el-form-item label="广告链接" prop="ad_link">
           <el-input v-model="formData.ad_link" placeholder="请输入广告连接" />
         </el-form-item>
-        <el-form-item label="广告图片" prop="ad_images">
+        <!-- <el-form-item label="广告图片" prop="ad_images">
           <el-upload class="avatar-uploader" action="#" :show-file-list="false" accept="image/jpg,image/jpeg,image/png"
             :on-success="handleImageSuccess" :before-upload="beforeImageUpload" :on-change="changeImage"
             :auto-upload="false" :file-list="fileList">
@@ -26,17 +26,20 @@
               <plus />
             </el-icon>
           </el-upload>
-        </el-form-item>
-        <!-- 后端接收文件的URL -->
-        <!-- <el-form-item label="封面" prop="poster">
-          <el-upload class="avatar-uploader" action="#" :show-file-list="false" accept="image/jpg,image/jpeg,image/png"
-            :before-upload="beforeAvatarUpload" :on-change="changeImage" :auto-upload="false">
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" title="点击重新上传" />
-            <el-icon v-else class="avatar-uploader-icon">
-              <plus />
-            </el-icon>
-          </el-upload>
         </el-form-item> -->
+
+        <el-form-item label="广告图片" prop="filesList">
+          <el-upload v-model:file-list="fileList" action="#" accept="image/jpg,image/jpeg,image/png"
+            :before-upload="beforeImageUpload" :on-change="changeImage" list-type="picture">
+            <el-button type="primary">Click to upload</el-button>
+            <template #tip>
+              <div class="el-upload__tip">
+                jpg/png files with a size less than 2M
+              </div>
+            </template>
+          </el-upload>
+        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="onSubmitUpdate">修 改</el-button>
           <el-button @click="close">取 消</el-button>
@@ -53,7 +56,7 @@ import api from "@/api";
 import { message } from '@/utils/message';
 import router from "@/router";
 import { updateAd } from "@/api/ad";
-import { ElForm, ElMessage, ElUpload, ElIcon } from "element-plus";
+import { ElForm, ElMessage, ElUpload, UploadUserFile } from "element-plus";
 import { formatToken, getToken } from '@/utils/auth';
 import { useTags } from "@/layout/hooks/useTag";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
@@ -69,11 +72,11 @@ const rules = ref({
 });
 const loading = ref(false);
 const route = useRoute();
-const imageUrl = ref('');
-const File = ref();
 const dataFormRef = ref(ElForm);
 const { multiTags } = useTags();
-const fileList = ref([]);
+const fileList = ref<UploadUserFile[]>([])
+const Files = [];
+const currentImages: { [key: string]: string } = {};
 const formData = reactive({
   id: 0,
   category: null,
@@ -94,17 +97,18 @@ function beforeImageUpload(rawFile) {
   }
   return true;
 }
-function handleImageSuccess(res, file) {
-  imageUrl.value = URL.createObjectURL(file.raw!)
-  formData.ad_images = imageUrl.value
-}
+
 /**
  * 上传文件
  * @param file 
  */
 function changeImage(file) {
-  File.value = file;
-  imageUrl.value = URL.createObjectURL(file.raw!)
+  const fileUrl = URL.createObjectURL(file.raw!)
+  fileList.value.push({
+    name: file.name,
+    url: fileUrl,
+  })
+  Files.push(file)
 }
 
 async function handleQuery() {
@@ -121,9 +125,21 @@ async function handleQuery() {
       formData.category = 2
     }
     formData.ad_link = data.data.ad_link;
-    formData.ad_images = data.data.ad_images;
     if (data.data.ad_images.length > 0) {
-      imageUrl.value = VITE_S3_URL + data.data.ad_images;
+      const adImages = data.data.ad_images.split(",")
+      for (let adImageUrl of adImages) {
+        let showImageUrl = ""
+        if (adImageUrl.startsWith("http")) {
+          showImageUrl = adImageUrl
+        } else {
+          showImageUrl = VITE_S3_URL + adImageUrl
+        }
+        fileList.value.push({
+          name: "",
+          url: showImageUrl,
+        })
+        currentImages[showImageUrl] = adImageUrl
+      }
     }
   }
 }
@@ -133,21 +149,33 @@ async function handleQuery() {
  */
 async function onSubmitUpdate() {
   loading.value = true;
-  if (File.value) {
-    const data = getToken();
-    await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=images", File, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        "Authorization": formatToken(data.accessToken),
-      }
-    }).then(res => {
-      formData.ad_images = res.data[0].key;
-    }).catch(err => {
-      ElMessage.error(err)
-    })
-  }
   dataFormRef.value.validate(async (isValid: boolean) => {
     if (isValid) {
+      const addFiles = []
+      formData.ad_images = ""
+      for (let file of fileList.value) {
+        if (file.url.startsWith("http")) {
+          formData.ad_images += currentImages[file.url] + ","
+        } else {
+          addFiles.push(file.raw)
+        }
+      }
+      if (addFiles.length > 0) {
+        const data = getToken();
+        await axios.post(VITE_ADMIN_HOST + "/s3/aws/upload?directory=public", addFiles, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": formatToken(data.accessToken),
+          }
+        }).then(res => {
+          for (let imageKey of res.data) {
+            formData.ad_images += imageKey.key + ",";
+          }
+        }).catch(err => {
+          ElMessage.error(err)
+        })
+      }
+      formData.ad_images = formData.ad_images.substring(0, formData.ad_images.length - 1)
       await updateAd(formData.id, formData.category, formData.category_id, formData.ad_link, formData.ad_images).then(res => {
         ElMessage.success("修改成功");
         close();
@@ -162,7 +190,6 @@ async function onSubmitUpdate() {
 onMounted(() => {
   handleQuery();
 })
-
 
 /**
  * 撤退到Dapp管理页面
